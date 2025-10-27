@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "cc8bb792-ac43-4f08-bcff-f9c01d5c310b",
+  "files": [],
+  "subMetas": {
+    "29686": {
+      "importer": "gltf-scene",
+      "uuid": "cc8bb792-ac43-4f08-bcff-f9c01d5c310b@29686",
+      "displayName": "",
+      "id": "29686",
+      "name": "Meat.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "42b1d": {
+      "importer": "gltf-mesh",
+      "uuid": "cc8bb792-ac43-4f08-bcff-f9c01d5c310b@42b1d",
+      "displayName": "",
+      "id": "42b1d",
+      "name": "battery.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 2048
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "eab9b": {
+      "importer": "gltf-material",
+      "uuid": "cc8bb792-ac43-4f08-bcff-f9c01d5c310b@eab9b",
+      "displayName": "",
+      "id": "eab9b",
+      "name": "battery.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "cc8bb792-ac43-4f08-bcff-f9c01d5c310b@42b1d"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "cc8bb792-ac43-4f08-bcff-f9c01d5c310b@eab9b"
+      ],
+      "scenes": [
+        "cc8bb792-ac43-4f08-bcff-f9c01d5c310b@29686"
+      ]
+    }
+  }
+}

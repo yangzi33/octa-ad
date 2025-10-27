@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "3ce9c591-601d-492f-80fb-92c6539385df",
+  "files": [],
+  "subMetas": {
+    "96093": {
+      "importer": "gltf-material",
+      "uuid": "3ce9c591-601d-492f-80fb-92c6539385df@96093",
+      "displayName": "",
+      "id": "96093",
+      "name": "gun.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "c42ea": {
+      "importer": "gltf-mesh",
+      "uuid": "3ce9c591-601d-492f-80fb-92c6539385df@c42ea",
+      "displayName": "",
+      "id": "c42ea",
+      "name": "gun.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 2499
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "df9d9": {
+      "importer": "gltf-scene",
+      "uuid": "3ce9c591-601d-492f-80fb-92c6539385df@df9d9",
+      "displayName": "",
+      "id": "df9d9",
+      "name": "shotgun.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "3ce9c591-601d-492f-80fb-92c6539385df@c42ea"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "3ce9c591-601d-492f-80fb-92c6539385df@96093"
+      ],
+      "scenes": [
+        "3ce9c591-601d-492f-80fb-92c6539385df@df9d9"
+      ]
+    }
+  }
+}

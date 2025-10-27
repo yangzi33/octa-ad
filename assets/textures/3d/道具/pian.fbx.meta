@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "464441fe-2a20-4085-ad8e-9c0bc0f35b09",
+  "files": [],
+  "subMetas": {
+    "59de3": {
+      "importer": "gltf-mesh",
+      "uuid": "464441fe-2a20-4085-ad8e-9c0bc0f35b09@59de3",
+      "displayName": "",
+      "id": "59de3",
+      "name": "pian.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 140
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "08410": {
+      "importer": "gltf-material",
+      "uuid": "464441fe-2a20-4085-ad8e-9c0bc0f35b09@08410",
+      "displayName": "",
+      "id": "08410",
+      "name": "Mesh.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "fb175": {
+      "importer": "gltf-scene",
+      "uuid": "464441fe-2a20-4085-ad8e-9c0bc0f35b09@fb175",
+      "displayName": "",
+      "id": "fb175",
+      "name": "pian.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "464441fe-2a20-4085-ad8e-9c0bc0f35b09@59de3"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "464441fe-2a20-4085-ad8e-9c0bc0f35b09@08410"
+      ],
+      "scenes": [
+        "464441fe-2a20-4085-ad8e-9c0bc0f35b09@fb175"
+      ]
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "bd75b394-64d4-42a3-9565-cb718d8c33a1",
+  "files": [],
+  "subMetas": {
+    "abea0": {
+      "importer": "gltf-mesh",
+      "uuid": "bd75b394-64d4-42a3-9565-cb718d8c33a1@abea0",
+      "displayName": "",
+      "id": "abea0",
+      "name": "zhua2.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 376
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "07157": {
+      "importer": "gltf-material",
+      "uuid": "bd75b394-64d4-42a3-9565-cb718d8c33a1@07157",
+      "displayName": "",
+      "id": "07157",
+      "name": "box1.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f8bdc": {
+      "importer": "gltf-scene",
+      "uuid": "bd75b394-64d4-42a3-9565-cb718d8c33a1@f8bdc",
+      "displayName": "",
+      "id": "f8bdc",
+      "name": "modaoshi1.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "bd75b394-64d4-42a3-9565-cb718d8c33a1@abea0"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "bd75b394-64d4-42a3-9565-cb718d8c33a1@07157"
+      ],
+      "scenes": [
+        "bd75b394-64d4-42a3-9565-cb718d8c33a1@f8bdc"
+      ]
+    }
+  }
+}

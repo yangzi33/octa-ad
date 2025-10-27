@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "80f74df1-4e5d-481d-b05e-d2ba567b971f",
+  "files": [],
+  "subMetas": {
+    "c7839": {
+      "importer": "gltf-mesh",
+      "uuid": "80f74df1-4e5d-481d-b05e-d2ba567b971f@c7839",
+      "displayName": "",
+      "id": "c7839",
+      "name": "SM_crystal_02.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 300
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "04d75": {
+      "importer": "gltf-material",
+      "uuid": "80f74df1-4e5d-481d-b05e-d2ba567b971f@04d75",
+      "displayName": "",
+      "id": "04d75",
+      "name": "MI_crystal.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "40fe7": {
+      "importer": "gltf-scene",
+      "uuid": "80f74df1-4e5d-481d-b05e-d2ba567b971f@40fe7",
+      "displayName": "",
+      "id": "40fe7",
+      "name": "logs.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "80f74df1-4e5d-481d-b05e-d2ba567b971f@c7839"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "80f74df1-4e5d-481d-b05e-d2ba567b971f@04d75"
+      ],
+      "scenes": [
+        "80f74df1-4e5d-481d-b05e-d2ba567b971f@40fe7"
+      ]
+    }
+  }
+}

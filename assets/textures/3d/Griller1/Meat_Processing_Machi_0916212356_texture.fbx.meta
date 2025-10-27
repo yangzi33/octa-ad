@@ -1,0 +1,146 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "64a6178e-e1b4-4eb3-a845-805c86d56374",
+  "files": [],
+  "subMetas": {
+    "99380": {
+      "importer": "gltf-material",
+      "uuid": "64a6178e-e1b4-4eb3-a845-805c86d56374@99380",
+      "displayName": "",
+      "id": "99380",
+      "name": "Material.001.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ef8a8": {
+      "importer": "gltf-mesh",
+      "uuid": "64a6178e-e1b4-4eb3-a845-805c86d56374@ef8a8",
+      "displayName": "",
+      "id": "ef8a8",
+      "name": "Mesh_0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 583031
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "48b02": {
+      "importer": "gltf-embeded-image",
+      "uuid": "64a6178e-e1b4-4eb3-a845-805c86d56374@48b02",
+      "displayName": "",
+      "id": "48b02",
+      "name": "base_color_texture.image",
+      "userData": {
+        "gltfIndex": 0,
+        "fixAlphaTransparencyArtifacts": true,
+        "hasAlpha": false,
+        "type": "texture"
+      },
+      "ver": "1.0.3",
+      "imported": true,
+      "files": [
+        ".json",
+        ".png"
+      ],
+      "subMetas": {}
+    },
+    "7d6ab": {
+      "importer": "texture",
+      "uuid": "64a6178e-e1b4-4eb3-a845-805c86d56374@7d6ab",
+      "displayName": "",
+      "id": "7d6ab",
+      "name": "base_color_texture.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "64a6178e-e1b4-4eb3-a845-805c86d56374@48b02"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "528e8": {
+      "importer": "gltf-scene",
+      "uuid": "64a6178e-e1b4-4eb3-a845-805c86d56374@528e8",
+      "displayName": "",
+      "id": "528e8",
+      "name": "Meat_Processing_Machi_0916212356_texture.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "base_color_texture",
+        "uri": "64a6178e-e1b4-4eb3-a845-805c86d56374@48b02"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "64a6178e-e1b4-4eb3-a845-805c86d56374@ef8a8"
+      ],
+      "skeletons": [],
+      "textures": [
+        "64a6178e-e1b4-4eb3-a845-805c86d56374@7d6ab"
+      ],
+      "materials": [
+        "64a6178e-e1b4-4eb3-a845-805c86d56374@99380"
+      ],
+      "scenes": [
+        "64a6178e-e1b4-4eb3-a845-805c86d56374@528e8"
+      ]
+    }
+  }
+}

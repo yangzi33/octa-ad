@@ -1,0 +1,99 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "13d653f3-9d4a-481a-8084-945c12f55080",
+  "files": [
+    "__original-animation-0.bin"
+  ],
+  "subMetas": {
+    "b3b3c": {
+      "importer": "gltf-animation",
+      "uuid": "13d653f3-9d4a-481a-8084-945c12f55080@b3b3c",
+      "displayName": "",
+      "id": "b3b3c",
+      "name": "cut.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 2.2666666507720947
+        },
+        "events": []
+      },
+      "ver": "1.0.18",
+      "imported": true,
+      "files": [
+        ".bin"
+      ],
+      "subMetas": {}
+    },
+    "b7557": {
+      "importer": "gltf-scene",
+      "uuid": "13d653f3-9d4a-481a-8084-945c12f55080@b7557",
+      "displayName": "",
+      "id": "b7557",
+      "name": "protagonist@cut.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "Take 001",
+        "duration": 2.2666666507720947,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "cut",
+            "from": 0,
+            "to": 2.2666666507720947,
+            "wrapMode": 2,
+            "previousId": "b3b3c"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [],
+      "skeletons": [],
+      "textures": [],
+      "materials": [],
+      "scenes": [
+        "13d653f3-9d4a-481a-8084-945c12f55080@b7557"
+      ]
+    }
+  }
+}

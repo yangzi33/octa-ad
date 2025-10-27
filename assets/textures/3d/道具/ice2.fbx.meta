@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "c98e6db5-58ae-4f83-ba24-c0fa92266226",
+  "files": [],
+  "subMetas": {
+    "6ece4": {
+      "importer": "gltf-mesh",
+      "uuid": "c98e6db5-58ae-4f83-ba24-c0fa92266226@6ece4",
+      "displayName": "",
+      "id": "6ece4",
+      "name": "000-0-0.002.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 24
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e3cd0": {
+      "importer": "gltf-material",
+      "uuid": "c98e6db5-58ae-4f83-ba24-c0fa92266226@e3cd0",
+      "displayName": "",
+      "id": "e3cd0",
+      "name": "campfire:campfire_blinn.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ba710": {
+      "importer": "gltf-scene",
+      "uuid": "c98e6db5-58ae-4f83-ba24-c0fa92266226@ba710",
+      "displayName": "",
+      "id": "ba710",
+      "name": "ice2.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "c98e6db5-58ae-4f83-ba24-c0fa92266226@6ece4"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "c98e6db5-58ae-4f83-ba24-c0fa92266226@e3cd0"
+      ],
+      "scenes": [
+        "c98e6db5-58ae-4f83-ba24-c0fa92266226@ba710"
+      ]
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "19f35891-5ad7-4c50-93f8-123bade6b976",
+  "files": [],
+  "subMetas": {
+    "64e0e": {
+      "importer": "gltf-mesh",
+      "uuid": "19f35891-5ad7-4c50-93f8-123bade6b976@64e0e",
+      "displayName": "",
+      "id": "64e0e",
+      "name": "000-0-0.001.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 30
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e3cd0": {
+      "importer": "gltf-material",
+      "uuid": "19f35891-5ad7-4c50-93f8-123bade6b976@e3cd0",
+      "displayName": "",
+      "id": "e3cd0",
+      "name": "campfire:campfire_blinn.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "66e8a": {
+      "importer": "gltf-scene",
+      "uuid": "19f35891-5ad7-4c50-93f8-123bade6b976@66e8a",
+      "displayName": "",
+      "id": "66e8a",
+      "name": "ice1.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "19f35891-5ad7-4c50-93f8-123bade6b976@64e0e"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "19f35891-5ad7-4c50-93f8-123bade6b976@e3cd0"
+      ],
+      "scenes": [
+        "19f35891-5ad7-4c50-93f8-123bade6b976@66e8a"
+      ]
+    }
+  }
+}
