@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Collider, ICollisionEvent } from 'cc';
+import { _decorator, Component, Node, Collider, ITriggerEvent } from 'cc';
 import { PlayerController } from './PlayerController';
 const { ccclass, property } = _decorator;
 
@@ -13,26 +13,83 @@ export class DeliveryZone extends Component {
     private _playerInZone: boolean = false;
     private _playerNode: Node = null;
     
-    start() {
+    onLoad() {
+        console.log("✅ DeliveryZone脚本已加载");
+        
         // 设置碰撞器为触发器
         const collider = this.getComponent(Collider);
         if (collider) {
             collider.isTrigger = true;
+            collider.on('onTriggerEnter', this.onTriggerEnter, this);
+            collider.on('onTriggerExit', this.onTriggerExit, this);
+            console.log("✅ 碰撞器事件已注册");
+        } else {
+            console.error("❌ DeliveryZone缺少碰撞器组件!");
+        }
+    }
+    
+    onTriggerEnter(event: ITriggerEvent) {
+        console.log("🎯 触发进入:", event.otherCollider.node.name);
+        
+        // 检测玩家进入
+        if (event.otherCollider.node.name === 'Player') {
+            console.log("🌟 玩家进入交付区域!");
+            this._playerInZone = true;
+            this._playerNode = event.otherCollider.node;
+            
+            // 🆕 自动触发交付
+            if (this.autoDelivery) {
+                this.triggerDelivery();
+            }
+        }
+    }
+    
+    onTriggerExit(event: ITriggerEvent) {
+        console.log("🚪 触发离开:", event.otherCollider.node.name);
+        
+        if (event.otherCollider.node.name === 'Player') {
+            console.log("玩家离开交付区域");
+            this._playerInZone = false;
+            this._playerNode = null;
         }
     }
     
     update(deltaTime: number) {
-        // 可以在这里添加交付区域的视觉效果
-        // 比如旋转、脉冲等
+        // 🆕 持续交付逻辑（如果玩家在区域内）
+        if (this._playerInZone && this.autoDelivery) {
+            this.continuousDelivery(deltaTime);
+        }
     }
     
-    // 🆕 可选：手动触发交付
+    // 🆕 持续交付
+    continuousDelivery(deltaTime: number) {
+        // 这里可以添加计时器逻辑，比如每秒交付一块肉
+        // 暂时先不实现，用即时交付
+    }
+    
+    // 🎯 手动触发交付
     triggerDelivery() {
+        console.log("🎯 triggerDelivery方法被调用!");
+        
         if (this._playerInZone && this._playerNode) {
-            const playerController = this._playerNode.getComponent(PlayerController);
-            if (playerController && playerController.hasMeat()) {
+            const playerController = this._playerNode.getComponent('PlayerController') as PlayerController;
+            if (playerController) {
+                console.log("✅ 找到PlayerController，开始交付");
                 playerController.deliverAllMeat();
+            } else {
+                console.error("❌ 玩家没有PlayerController组件!");
             }
+        } else {
+            console.log("⚠️ 没有玩家在交付区域内");
+        }
+    }
+    
+    onDestroy() {
+        // 清理事件监听
+        const collider = this.getComponent(Collider);
+        if (collider) {
+            collider.off('onTriggerEnter', this.onTriggerEnter, this);
+            collider.off('onTriggerExit', this.onTriggerExit, this);
         }
     }
 }
