@@ -455,7 +455,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "moveSpeed": 0.2,
+    "moveSpeed": 10,
     "joystick": {
       "__id__": 15
     },
@@ -1752,6 +1752,8 @@
       "__id__": 45
     },
     "maxR": 50,
+    "autoHide": false,
+    "touchArea": null,
     "_id": "40nhm9M8hPwJqrH16Tv7K9"
   },
   {
