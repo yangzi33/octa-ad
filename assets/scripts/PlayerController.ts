@@ -52,6 +52,30 @@ export class PlayerController extends Component {
         // 🆕 检查是否在交付区域内并自动交付
         this.checkAutoDelivery(deltaTime);
     }
+
+    // 在 PlayerController.ts 中添加 stabilizePlayer 方法
+    stabilizePlayer() {
+        // 保持玩家直立 - 只保留 Y 轴旋转，重置 X 和 Z 轴旋转
+        const currentEuler = this.node.eulerAngles;
+        const targetEuler = new Vec3(0, currentEuler.y, 0);
+        
+        if (!currentEuler.equals(targetEuler)) {
+            this.node.setRotationFromEuler(targetEuler);
+        }
+        
+        // 保持玩家在地面上（防止掉落或浮空）
+        const currentPos = this.node.position;
+        if (currentPos.y !== 0) { // 根据你的地面高度调整，0 表示地面高度
+            this.node.setPosition(currentPos.x, 0, currentPos.z);
+        }
+        
+        // 🆕 可选：重置物理速度（如果有 Rigidbody）
+        const rigidbody = this.getComponent(RigidBody);
+        if (rigidbody) {
+            rigidbody.setLinearVelocity(Vec3.ZERO);
+            rigidbody.setAngularVelocity(Vec3.ZERO);
+        }
+    }
     
     // 🆕 触发器进入事件
     onTriggerEnter(event: ICollisionEvent) {
