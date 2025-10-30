@@ -16,6 +16,9 @@ export class PlayerController extends Component {
     meatStackOffset: Vec3 = new Vec3(0, 0.5, 0); // 每块肉的叠放偏移
 
     @property
+    rotationSpeed: number = 10;
+
+    @property
     meatPerSec: number = 1.0;
     
     private _joystickComp: Joystick = null;
@@ -27,17 +30,23 @@ export class PlayerController extends Component {
     private _isInDeliveryZone: boolean = false;
     private _deliveryTimer: number = null; // 🆕 新增交付计时器
 
+    private _currentDirection: number = 5; // 🆕 当前方向（1-9）
+    private _targetRotation: Quat = new Quat(); // 🆕 目标旋转
+    private _targetEulerY: number = 0; // 🆕 直接存储Y轴欧拉角
+
+
+    onLoad() {
+        // 🆕 初始化旋转
+        this._targetRotation = this.node.rotation.clone();
+    }
+    
     start() {
         if (this.joystick) {
-            this._joystickComp = this.joystick.getComponent(Joystick);
+            this._joystickComp = this.joystick.getComponent('Joystick') as any;
         }
         
-        // 🆕 添加碰撞检测
-        const collider = this.getComponent(Collider);
-        if (collider) {
-            collider.on('onTriggerEnter', this.onTriggerEnter, this);
-            collider.on('onTriggerExit', this.onTriggerExit, this);
-        }
+        // 🆕 初始化当前Y轴旋转
+        this._targetEulerY = this.node.eulerAngles.y;
     }
     
     update(deltaTime: number) {
@@ -46,39 +55,138 @@ export class PlayerController extends Component {
         const dir = this._joystickComp.dir;
         
         if (!dir.equals(Vec2.ZERO)) {
+            // 移动逻辑
             const moveVec = new Vec3(dir.x, 0, -dir.y);
             this.node.position = this.node.position.add(moveVec.multiplyScalar(this.moveSpeed * deltaTime));
             
-            // 更新背上肉块的位置
-            // this.updateMeatPositions();
-            this.updateAllMeatPositions(); // 🆕 替换原来的 updateMeatPositions
+            // 🆕 更新方向
+            this.updateDirection(dir);
+            
+            // 🆕 应用Y轴旋转
+            this.applyYRotation(deltaTime);
+            
+            this.stabilizePlayer();
+            this.updateMeatPositions();
+            
+            console.log(`🎮 方向: ${this._currentDirection}, Y轴角度: ${this._targetEulerY.toFixed(1)}°`);
+        } else {
+            // 摇杆回中时重置方向为5
+            if (this._currentDirection !== 5) {
+                this._currentDirection = 5;
+            }
         }
-        
-        // 🆕 检查是否在交付区域内并自动交付
-        this.checkAutoDelivery(deltaTime);
     }
-
-    // 在 PlayerController.ts 中添加 stabilizePlayer 方法
-    stabilizePlayer() {
-        // 保持玩家直立 - 只保留 Y 轴旋转，重置 X 和 Z 轴旋转
+    
+    // 🆕 根据摇杆方向更新角色朝向
+    updateDirection(joystickDir: Vec2) {
+        // 🆕 直接计算Y轴旋转角度（弧度）
+        // atan2(x, z) 其中x是左右，z是前后（注意Cocos的坐标系）
+        const targetAngleRad = Math.atan2(joystickDir.x, -joystickDir.y);
+        
+        // 🆕 转换为角度（0-360度）
+        let targetAngleDeg = targetAngleRad * 180 / Math.PI;
+        if (targetAngleDeg < 0) targetAngleDeg += 360;
+        
+        // 🆕 直接设置目标Y轴角度
+        this._targetEulerY = targetAngleDeg;
+        
+        // 🆕 转换为街霸方向（1-9）
+        const newDirection = this.angleToStreetFighterDirection(targetAngleDeg);
+        
+        if (newDirection !== this._currentDirection) {
+            this._currentDirection = newDirection;
+        }
+    }
+    
+    // 🆕 将角度转换为街霸方向（1-9）
+    angleToStreetFighterDirection(angle: number): number {
+        const sector = Math.floor((angle + 22.5) / 45) % 8;
+        
+        switch (sector) {
+            case 0: return 8; // 上
+            case 1: return 9; // 右上
+            case 2: return 6; // 右
+            case 3: return 3; // 右下
+            case 4: return 2; // 下
+            case 5: return 1; // 左下
+            case 6: return 4; // 左
+            case 7: return 7; // 左上
+            default: return 5;
+        }
+    }
+    
+    // 🆕 应用Y轴旋转
+    applyYRotation(deltaTime: number) {
         const currentEuler = this.node.eulerAngles;
-        const targetEuler = new Vec3(0, currentEuler.y, 0);
+        const currentY = currentEuler.y;
         
-        if (!currentEuler.equals(targetEuler)) {
-            this.node.setRotationFromEuler(targetEuler);
+        // 🆕 处理角度环绕（确保平滑旋转）
+        let diff = this._targetEulerY - currentY;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        
+        // 🆕 线性插值
+        const newY = currentY + diff * this.rotationSpeed * deltaTime;
+        
+        // 🆕 直接设置欧拉角，只改变Y轴
+        this.node.setRotationFromEuler(currentEuler.x, newY, currentEuler.z);
+    }
+    
+    // 🆕 获取当前方向
+    getCurrentDirection(): number {
+        return this._currentDirection;
+    }
+    
+    // 🆕 获取方向名称
+    getDirectionName(direction?: number): string {
+        const dir = direction !== undefined ? direction : this._currentDirection;
+        
+        switch (dir) {
+            case 1: return "左下 (↙️)";
+            case 2: return "下 (⬇️)";
+            case 3: return "右下 (↘️)";
+            case 4: return "左 (⬅️)";
+            case 5: return "中心 (🛑)";
+            case 6: return "右 (➡️)";
+            case 7: return "左上 (↖️)";
+            case 8: return "上 (⬆️)";
+            case 9: return "右上 (↗️)";
+            default: return "未知";
         }
-        
-        // 保持玩家在地面上（防止掉落或浮空）
+    }
+    
+    // 🆕 调试方法：手动设置方向
+    setDirection(direction: number) {
+        if (direction >= 1 && direction <= 9) {
+            this._currentDirection = direction;
+            
+            // 🆕 根据方向设置Y轴角度
+            let targetAngle = 0;
+            switch (direction) {
+                case 1: targetAngle = 225; break; // ↙️
+                case 2: targetAngle = 180; break; // ⬇️
+                case 3: targetAngle = 135; break; // ↘️
+                case 4: targetAngle = 270; break; // ⬅️
+                case 5: targetAngle = this.node.eulerAngles.y; break; // 🛑 保持
+                case 6: targetAngle = 90; break;  // ➡️
+                case 7: targetAngle = 315; break; // ↖️
+                case 8: targetAngle = 0; break;   // ⬆️
+                case 9: targetAngle = 45; break;  // ↗️
+            }
+            
+            this._targetEulerY = targetAngle;
+            // 🆕 立即应用旋转
+            const currentEuler = this.node.eulerAngles;
+            this.node.setRotationFromEuler(currentEuler.x, targetAngle, currentEuler.z);
+            
+            console.log(`🎯 手动设置方向: ${direction} - ${this.getDirectionName(direction)}`);
+        }
+    }
+    
+    stabilizePlayer() {
         const currentPos = this.node.position;
-        if (currentPos.y !== 0) { // 根据你的地面高度调整，0 表示地面高度
+        if (currentPos.y !== 0) {
             this.node.setPosition(currentPos.x, 0, currentPos.z);
-        }
-        
-        // 🆕 可选：重置物理速度（如果有 Rigidbody）
-        const rigidbody = this.getComponent(RigidBody);
-        if (rigidbody) {
-            rigidbody.setLinearVelocity(Vec3.ZERO);
-            rigidbody.setAngularVelocity(Vec3.ZERO);
         }
     }
     

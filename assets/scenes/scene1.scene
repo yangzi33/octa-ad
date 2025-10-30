@@ -455,7 +455,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "moveSpeed": 0.1,
+    "moveSpeed": 0.2,
     "joystick": {
       "__id__": 15
     },
@@ -465,6 +465,7 @@
       "y": 0.5,
       "z": 0
     },
+    "rotationSpeed": 10,
     "meatPerSec": 1,
     "_id": "06xIzZm0NNI5c8Gutz0zyK"
   },
@@ -1750,7 +1751,7 @@
     "btn": {
       "__id__": 45
     },
-    "maxR": 80,
+    "maxR": 50,
     "_id": "40nhm9M8hPwJqrH16Tv7K9"
   },
   {
