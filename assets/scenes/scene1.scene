@@ -6267,7 +6267,10 @@
     "meatEndNode": null,
     "deliveryTime": 2,
     "flightHeight": 3,
-    "slicedMeatPrefab": null,
+    "slicedMeatPrefab": {
+      "__uuid__": "b6a24619-4b65-4876-b1db-474c18673ee3",
+      "__expectedType__": "cc.Prefab"
+    },
     "_id": "90Nnq2gM1Bf6y5yV/o4bG5"
   },
   {
@@ -6617,7 +6620,10 @@
     "meatDeliverySystem": {
       "__id__": 396
     },
-    "cookedMeatPrefab": null,
+    "cookedMeatPrefab": {
+      "__uuid__": "b6a24619-4b65-4876-b1db-474c18673ee3",
+      "__expectedType__": "cc.Prefab"
+    },
     "_id": "dfF1+ARShKwrXD+mmSHbQJ"
   },
   {
@@ -9037,8 +9043,8 @@
       "y": 0,
       "z": 10
     },
-    "maxMeatCount": 10,
-    "spawnInterval": 3,
+    "maxMeatCount": 100,
+    "spawnInterval": 1,
     "_id": "94stlxXuRKz5IKuXZ2ia5H"
   },
   {
@@ -9206,7 +9212,7 @@
   {
     "__type__": "cc.TargetInfo",
     "localID": [
-      "28UdyaigBPc6t4+mxBj+ne"
+      "25eWTN3hxJp6KRqUUgwzwZ"
     ]
   },
   {
@@ -9228,7 +9234,7 @@
   {
     "__type__": "cc.TargetInfo",
     "localID": [
-      "25eWTN3hxJp6KRqUUgwzwZ"
+      "28UdyaigBPc6t4+mxBj+ne"
     ]
   },
   {
