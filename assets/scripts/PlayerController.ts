@@ -1,6 +1,8 @@
-import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2 } from 'cc';
+import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, instantiate } from 'cc';
 import { Joystick } from './Joystick';
+import { Meat } from './Meat';
 const { ccclass, property } = _decorator;
+
 
 @ccclass('PlayerController')
 export class PlayerController extends Component {
@@ -132,20 +134,53 @@ export class PlayerController extends Component {
     startCollectingMeat(meat: Node) {
         console.log("开始收集肉块:", meat.name);
         
-        // 将肉块设置为玩家的子节点
-        meat.parent = this.node;
+        // 🆕 检查肉块结构
+        console.log("肉块子节点数量:", meat.children.length);
+        console.log("肉块组件:", meat.components);
         
-        // 禁用肉块的物理组件（如果有）
-        const collider = meat.getComponent(Collider);
-        if (collider) {
-            collider.enabled = false;
+        // 🆕 方法1：直接使用肉块节点本身（如果模型在根节点）
+        const collectedMeat = new Node('CollectedMeat_' + this._collectedMeats.length);
+        
+        // 🆕 复制所有组件（包括模型渲染器）
+        meat.components.forEach(component => {
+            if (component.constructor.name !== 'RigidBody' && 
+                component.constructor.name !== 'Collider' &&
+                component.constructor.name !== 'Meat') {
+                // 复制模型相关的组件
+                const componentCopy = collectedMeat.addComponent(component.constructor as any);
+                // 这里需要手动复制属性，但比较复杂
+            }
+        });
+        
+        // 🆕 更简单的方法：直接使用原肉块节点，但移除物理组件
+        this.collectMeatDirectly(meat);
+    }
+    
+    // 🆕 直接收集方法
+    collectMeatDirectly(meat: Node) {
+        // 彻底移除物理组件
+        const rigidbody = meat.getComponent(RigidBody);
+        if (rigidbody) {
+            meat.removeComponent(RigidBody);
         }
         
-        // 计算肉块的叠放位置
+        const collider = meat.getComponent(Collider);
+        if (collider) {
+            meat.removeComponent(Collider);
+        }
+        
+        // 禁用肉块脚本
+        const meatComp = meat.getComponent('Meat');
+        if (meatComp) {
+            meatComp.enabled = false;
+        }
+        
+        // 设置为玩家子节点
+        meat.parent = this.node;
         const stackPosition = this.calculateMeatStackPosition(this._collectedMeats.length);
         meat.setPosition(stackPosition);
+        meat.setRotation(Quat.IDENTITY);
         
-        // 添加到收集列表并更新计数
         this._collectedMeats.push(meat);
         this._meatCount = this._collectedMeats.length;
         

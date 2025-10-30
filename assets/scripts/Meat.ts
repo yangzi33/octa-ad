@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Collider, ITriggerEvent } from 'cc';
+import { _decorator, Component, Node, Vec3, Collider, ITriggerEvent, RigidBody, ICollisionEvent } from 'cc';
 import { MeatSpawner } from './MeatSpawner';
 import { PlayerController } from './PlayerController';
 const { ccclass, property } = _decorator;
@@ -26,24 +26,26 @@ export class Meat extends Component {
     }
     
     start() {
-        // 确保碰撞器存在并设置触发器事件
-        if (this._collider) {
-            this._collider.on('onTriggerEnter', this.onTriggerEnter, this);
-            console.log("肉块碰撞器已设置");
-        } else {
-            console.error("肉块缺少碰撞器组件!");
+        const collider = this.getComponent(Collider);
+            if (collider) {
+                // 移除Is Trigger，让肉块有物理碰撞
+                collider.isTrigger = false;
+                
+                // 添加刚体组件让肉块有物理属性
+                const rigidbody = this.node.addComponent(RigidBody);
+                rigidbody.type = RigidBody.Type.STATIC; // 或者DYNAMIC
+                rigidbody.mass = 1;
+                
+                collider.on('onCollisionEnter', this.onCollisionEnter, this);
+            }
         }
-    }
     
-    onTriggerEnter(event: ITriggerEvent) {
-        console.log("肉块触发碰撞:", event.otherCollider.node.name);
-        
-        // 检测玩家进入吸附范围
-        if (event.otherCollider.node.name.includes('Player')) {
-            console.log("玩家碰到肉块!");
-            this.startAttraction(event.otherCollider.node);
+        onCollisionEnter(event: ICollisionEvent) {
+            if (event.otherCollider.node.name === 'Player') {
+                console.log("物理碰撞检测到玩家!");
+                this.startAttraction(event.otherCollider.node);
+            }
         }
-    }
     
     startAttraction(player: Node) {
         // 防止重复触发
@@ -112,7 +114,7 @@ export class Meat extends Component {
     onDestroy() {
         // 清理事件监听
         if (this._collider) {
-            this._collider.off('onTriggerEnter', this.onTriggerEnter, this);
+            this._collider.off('onTriggerEnter', this.onCollisionEnter, this);
         }
     }
 }
