@@ -68,7 +68,7 @@ export class PlayerController extends Component {
             this.stabilizePlayer();
             this.updateMeatPositions();
             
-            console.log(`🎮 方向: ${this._currentDirection}, Y轴角度: ${this._targetEulerY.toFixed(1)}°`);
+            // console.log(`🎮 方向: ${this._currentDirection}, Y轴角度: ${this._targetEulerY.toFixed(1)}°`);
         } else {
             // 摇杆回中时重置方向为5
             if (this._currentDirection !== 5) {
@@ -422,5 +422,37 @@ export class PlayerController extends Component {
             const targetPos = this.calculateCookedMeatStackPosition(index);
             meat.setPosition(targetPos);
         });
+    }
+
+    // 🆕 检查是否有煮好的肉块
+    hasCookedMeat(): boolean {
+        return this._cookedMeatCount > 0;
+    }
+
+    // 🆕 获取煮好肉块数量
+    getCookedMeatCount(): number {
+        return this._cookedMeatCount;
+    }
+
+    // 🆕 交付单块煮好的肉块（返回肉块节点）
+    deliverOneCookedMeat(): Node | null {
+        if (this._cookedMeatCount === 0) return null;
+        
+        // 移除最后一块煮好的肉块
+        const lastCookedMeat = this._cookedMeats.pop();
+        if (!lastCookedMeat || !lastCookedMeat.isValid) {
+            return null;
+        }
+        
+        this._cookedMeatCount = this._cookedMeats.length;
+        
+        // 从玩家子节点中移除，但不销毁
+        lastCookedMeat.parent = null;
+        
+        // 更新剩余煮好肉块的位置
+        this.updateAllMeatPositions();
+        
+        console.log(`📦 交付1块煮好肉块，剩余 ${this._cookedMeatCount} 块`);
+        return lastCookedMeat;
     }
 }

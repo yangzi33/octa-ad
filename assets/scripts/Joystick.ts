@@ -150,7 +150,7 @@ export class Joystick extends Component {
                 this.btn.setPosition(newX, newY, 0);
                 this._dir = new Vec2(offsetX / distance, offsetY / distance);
                 
-                console.log("🎮 摇杆方向:", this._dir, "距离:", limitedDistance.toFixed(1));
+                // console.log("🎮 摇杆方向:", this._dir, "距离:", limitedDistance.toFixed(1));
             }
         } catch (error) {
             console.error("❌ 摇杆更新错误:", error);
