@@ -14,6 +14,9 @@ export class PlayerController extends Component {
     
     @property
     meatStackOffset: Vec3 = new Vec3(0, 0.5, 0); // 每块肉的叠放偏移
+
+    @property
+    meatPerSec: number = 1.0;
     
     private _joystickComp: Joystick = null;
     private _collectedMeats: Node[] = []; // 收集的肉块列表
@@ -22,6 +25,7 @@ export class PlayerController extends Component {
     // 🆕 交付区域相关
     private _deliveryZone: Node = null;
     private _isInDeliveryZone: boolean = false;
+    private _deliveryTimer: number = null; // 🆕 新增交付计时器
 
     start() {
         if (this.joystick) {
@@ -96,14 +100,36 @@ export class PlayerController extends Component {
     }
     
     // 🆕 自动交付检查
+    // 在 PlayerController.ts 中修改 checkAutoDelivery 方法
     checkAutoDelivery(deltaTime: number) {
         if (this._isInDeliveryZone && this._meatCount > 0) {
-            // 可以在这里添加交付逻辑，比如每2秒交付一块肉
-            // 这里我们简化为立即交付所有肉
-            this.deliverAllMeat();
+            // 🆕 使用计时器逐个交付
+            if (!this._deliveryTimer) {
+                this._deliveryTimer = 0;
+                console.log("🏪 开始自动交付肉块");
+            }
+            
+            this._deliveryTimer += deltaTime;
+            
+            // 🆕 每1秒交付一块肉（可以根据需要调整速率）
+            const deliveryInterval = this.meatPerSec; // 每秒交付1块
+            
+            if (this._deliveryTimer >= deliveryInterval) {
+                this.deliverOneMeat();
+                this._deliveryTimer = 0; // 重置计时器
+                
+                // 🆕 如果还有肉，继续交付；如果没有了，重置计时器
+                if (this._meatCount === 0) {
+                    this._deliveryTimer = null;
+                    console.log("✅ 所有肉块交付完成");
+                }
+            }
+        } else {
+            // 🆕 不在交付区域时重置计时器
+            this._deliveryTimer = null;
         }
     }
-    
+
     // 🆕 交付所有肉
     deliverAllMeat() {
         if (this._meatCount === 0) return;

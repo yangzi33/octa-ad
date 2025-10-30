@@ -462,6 +462,7 @@
       "y": 0.5,
       "z": 0
     },
+    "meatPerSec": 1,
     "_id": "06xIzZm0NNI5c8Gutz0zyK"
   },
   {
@@ -6349,6 +6350,7 @@
     "__prefab": null,
     "autoDelivery": true,
     "deliveryRate": 1,
+    "deliveryInterval": 1,
     "_id": "90aJrr8j9KiJG38SfEitnb"
   },
   {
