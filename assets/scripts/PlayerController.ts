@@ -50,7 +50,8 @@ export class PlayerController extends Component {
             this.node.position = this.node.position.add(moveVec.multiplyScalar(this.moveSpeed * deltaTime));
             
             // 更新背上肉块的位置
-            this.updateMeatPositions();
+            // this.updateMeatPositions();
+            this.updateAllMeatPositions(); // 🆕 替换原来的 updateMeatPositions
         }
         
         // 🆕 检查是否在交付区域内并自动交付
@@ -152,22 +153,25 @@ export class PlayerController extends Component {
     }
     
     // 🆕 交付单块肉
-    deliverOneMeat() {
-        if (this._meatCount === 0) return;
+    deliverOneMeat(): Node | null {
+        if (this._meatCount === 0) return null;
         
-        // 移除最后一块肉
+        // 🆕 移除最后一块肉但不销毁，返回肉块节点
         const lastMeat = this._collectedMeats.pop();
-        if (lastMeat && lastMeat.isValid) {
-            lastMeat.destroy();
+        if (!lastMeat || !lastMeat.isValid) {
+            return null;
         }
         
         this._meatCount = this._collectedMeats.length;
         
+        // 🆕 重要：从玩家子节点中移除，但不销毁
+        lastMeat.parent = null;
+        
         // 更新剩余肉块的位置
         this.updateMeatPositions();
         
-        console.log(`交付1块肉，剩余 ${this._meatCount} 块`);
-        this.onMeatDelivered();
+        console.log(`📦 交付1块肉，剩余 ${this._meatCount} 块`);
+        return lastMeat; // 🆕 返回肉块节点
     }
     
     // 🆕 交付回调（可以扩展效果）
@@ -264,5 +268,51 @@ export class PlayerController extends Component {
     // 🆕 检查是否携带肉块
     hasMeat(): boolean {
         return this._meatCount > 0;
+    }
+
+    // 在 PlayerController.ts 中添加
+    private _cookedMeats: Node[] = []; // 煮好的肉块
+    private _cookedMeatCount: number = 0;
+
+    // 🆕 获取最后一块肉（用于交付）
+    getLastMeat(): Node | null {
+        if (this._collectedMeats.length === 0) return null;
+        return this._collectedMeats[this._collectedMeats.length - 1];
+    }
+
+    // 🆕 获得煮好的肉块
+    obtainCookedMeat(cookedMeat: Node) {
+        if (!cookedMeat) return;
+        
+        // 🆕 设置父节点
+        cookedMeat.parent = this.node;
+        
+        // 🆕 计算叠放位置（根据肉块类型）
+        const stackPosition = this.calculateCookedMeatStackPosition(this._cookedMeatCount);
+        cookedMeat.setPosition(stackPosition);
+        
+        this._cookedMeats.push(cookedMeat);
+        this._cookedMeatCount++;
+        
+        console.log(`🍖 获得煮好的肉块，总数: ${this._cookedMeatCount}`);
+    }
+
+    // 🆕 计算煮好肉块的叠放位置
+    calculateCookedMeatStackPosition(index: number): Vec3 {
+        // 🆕 根据当前背的肉块类型决定位置
+        const baseOffset = this._collectedMeats.length > 0 ? -2 : -1;
+        return new Vec3(0, baseOffset + (index * 0.5), -0.5);
+    }
+
+    // 🆕 更新所有肉块位置（包括煮好的）
+    updateAllMeatPositions() {
+        // 更新原始肉块
+        this.updateMeatPositions();
+        
+        // 🆕 更新煮好的肉块
+        this._cookedMeats.forEach((meat, index) => {
+            const targetPos = this.calculateCookedMeatStackPosition(index);
+            meat.setPosition(targetPos);
+        });
     }
 }
