@@ -1,0 +1,232 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7",
+  "files": [
+    "__original-animation-0.bin"
+  ],
+  "subMetas": {
+    "13056": {
+      "importer": "gltf-scene",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@13056",
+      "displayName": "",
+      "id": "13056",
+      "name": "墙体衔接.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "91097": {
+      "importer": "gltf-mesh",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@91097",
+      "displayName": "",
+      "id": "91097",
+      "name": "zuo.mesh",
+      "userData": {
+        "gltfIndex": 5,
+        "triangleCount": 12
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "7540f": {
+      "importer": "gltf-mesh",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@7540f",
+      "displayName": "",
+      "id": "7540f",
+      "name": "you.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 12
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "10b0f": {
+      "importer": "gltf-mesh",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@10b0f",
+      "displayName": "",
+      "id": "10b0f",
+      "name": "youx.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 8
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "8c587": {
+      "importer": "gltf-mesh",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@8c587",
+      "displayName": "",
+      "id": "8c587",
+      "name": "zuox.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 8
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "cb4f3": {
+      "importer": "gltf-mesh",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@cb4f3",
+      "displayName": "",
+      "id": "cb4f3",
+      "name": "yous.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 12
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96f84": {
+      "importer": "gltf-mesh",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@96f84",
+      "displayName": "",
+      "id": "96f84",
+      "name": "zuos.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 12
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "73b7f": {
+      "importer": "gltf-animation",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@73b7f",
+      "displayName": "",
+      "id": "73b7f",
+      "name": "Take 001.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 3.3333332538604736
+        },
+        "events": []
+      },
+      "ver": "1.0.18",
+      "imported": true,
+      "files": [
+        ".bin"
+      ],
+      "subMetas": {}
+    },
+    "9d093": {
+      "importer": "gltf-material",
+      "uuid": "42ee78df-1726-4664-be55-278d21e1d1f7@9d093",
+      "displayName": "",
+      "id": "9d093",
+      "name": "Material #25.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "Take 001",
+        "duration": 3.3333332538604736,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "Take 001",
+            "from": 0,
+            "to": 3.3333332538604736,
+            "wrapMode": 2,
+            "previousId": "73b7f"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "42ee78df-1726-4664-be55-278d21e1d1f7@7540f",
+        "42ee78df-1726-4664-be55-278d21e1d1f7@10b0f",
+        "42ee78df-1726-4664-be55-278d21e1d1f7@8c587",
+        "42ee78df-1726-4664-be55-278d21e1d1f7@cb4f3",
+        "42ee78df-1726-4664-be55-278d21e1d1f7@96f84",
+        "42ee78df-1726-4664-be55-278d21e1d1f7@91097"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "42ee78df-1726-4664-be55-278d21e1d1f7@9d093"
+      ],
+      "scenes": [
+        "42ee78df-1726-4664-be55-278d21e1d1f7@13056"
+      ]
+    }
+  }
+}

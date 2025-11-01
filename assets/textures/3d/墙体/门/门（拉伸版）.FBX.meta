@@ -1,0 +1,207 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7",
+  "files": [
+    "__original-animation-0.bin"
+  ],
+  "subMetas": {
+    "e0160": {
+      "importer": "gltf-mesh",
+      "uuid": "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@e0160",
+      "displayName": "",
+      "id": "e0160",
+      "name": "WM_Wall_01_Door_l003.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 22
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e5167": {
+      "importer": "gltf-mesh",
+      "uuid": "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@e5167",
+      "displayName": "",
+      "id": "e5167",
+      "name": "WM_Wall_01_Door_r003.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 22
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a53f7": {
+      "importer": "gltf-mesh",
+      "uuid": "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@a53f7",
+      "displayName": "",
+      "id": "a53f7",
+      "name": "WM_Wall_01_a003.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 310
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "73b7f": {
+      "importer": "gltf-animation",
+      "uuid": "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@73b7f",
+      "displayName": "",
+      "id": "73b7f",
+      "name": "Take 001.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 3.3333332538604736
+        },
+        "events": []
+      },
+      "ver": "1.0.18",
+      "imported": true,
+      "files": [
+        ".bin"
+      ],
+      "subMetas": {}
+    },
+    "cb93c": {
+      "importer": "texture",
+      "uuid": "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@cb93c",
+      "displayName": "",
+      "id": "cb93c",
+      "name": "贴图 #20.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/textures/3d/墙体/门/uvwcuxian.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9d093": {
+      "importer": "gltf-material",
+      "uuid": "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@9d093",
+      "displayName": "",
+      "id": "9d093",
+      "name": "Material #25.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "408c9": {
+      "importer": "gltf-scene",
+      "uuid": "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@408c9",
+      "displayName": "",
+      "id": "408c9",
+      "name": "门（拉伸版）.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "贴图 #20",
+        "uri": "db://assets/textures/3d/墙体/门/uvwcuxian.png"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "Take 001",
+        "duration": 3.3333332538604736,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "Take 001",
+            "from": 0,
+            "to": 3.3333332538604736,
+            "wrapMode": 2,
+            "previousId": "73b7f"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@e0160",
+        "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@e5167",
+        "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@a53f7"
+      ],
+      "skeletons": [],
+      "textures": [
+        "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@cb93c"
+      ],
+      "materials": [
+        "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@9d093"
+      ],
+      "scenes": [
+        "a024b7a7-54eb-4fb0-a96b-c6e4d4c739c7@408c9"
+      ]
+    },
+    "dumpMaterials": false,
+    "useVertexColors": false
+  }
+}
