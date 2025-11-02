@@ -77,13 +77,8 @@
   ],
   "_props": [
     {
-      "normalStrength": 1.433,
       "mainTexture": {
-        "__uuid__": "4de012c2-a650-4754-afe7-3df28bf82624@6c48a",
-        "__expectedType__": "cc.Texture2D"
-      },
-      "normalMap": {
-        "__uuid__": "4de012c2-a650-4754-afe7-3df28bf82624@6c48a",
+        "__uuid__": "3519af05-3832-4d38-b176-4ce04655105b@6c48a",
         "__expectedType__": "cc.Texture2D"
       }
     },
