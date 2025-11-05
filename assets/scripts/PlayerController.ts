@@ -1,7 +1,8 @@
-import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, instantiate, input, Input, KeyCode, find} from 'cc';
+import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, instantiate } from 'cc';
 import { Joystick } from './Joystick';
 import { Meat } from './Meat';
 const { ccclass, property } = _decorator;
+
 
 @ccclass('PlayerController')
 export class PlayerController extends Component {
@@ -12,7 +13,7 @@ export class PlayerController extends Component {
     joystick: Node = null;
     
     @property
-    meatStackOffset: Vec3 = new Vec3(0, 0.5, 0);
+    meatStackOffset: Vec3 = new Vec3(0, 0.5, 0); // 每块肉的叠放偏移
 
     @property
     rotationSpeed: number = 10;
@@ -21,282 +22,75 @@ export class PlayerController extends Component {
     meatPerSec: number = 1.0;
     
     private _joystickComp: Joystick = null;
-    private _rigidBody: RigidBody = null;
-    private _collectedMeats: Node[] = [];
-    private _meatCount: number = 0;
+    private _collectedMeats: Node[] = []; // 收集的肉块列表
+    private _meatCount: number = 0; // 🆕 肉块计数
     
+    // 🆕 交付区域相关
     private _deliveryZone: Node = null;
     private _isInDeliveryZone: boolean = false;
-    private _deliveryTimer: number = null;
+    private _deliveryTimer: number = null; // 🆕 新增交付计时器
 
-    private _currentDirection: number = 5;
-    private _targetRotation: Quat = new Quat();
-    private _targetEulerY: number = 0;
+    private _currentDirection: number = 5; // 🆕 当前方向（1-9）
+    private _targetRotation: Quat = new Quat(); // 🆕 目标旋转
+    private _targetEulerY: number = 0; // 🆕 直接存储Y轴欧拉角
 
-    // 调试相关
-    private _debugCounter: number = 0;
-    private _isPhysicsWorking: boolean = false;
 
     onLoad() {
-        console.log('🚀 PlayerController onLoad');
-        
-        this._rigidBody = this.getComponent(RigidBody);
-        
-        if (!this._rigidBody) {
-            console.error('❌ 没有找到 RigidBody 组件！请检查玩家节点是否有 RigidBody 组件');
-            return;
-        }
-        
-        console.log('✅ 找到 RigidBody 组件');
-        this.setupRigidBody();
+        // 🆕 初始化旋转
+        this._targetRotation = this.node.rotation.clone();
     }
     
     start() {
-        console.log('🎮 PlayerController start');
-        
         if (this.joystick) {
-            this._joystickComp = this.joystick.getComponent(Joystick);
-            if (this._joystickComp) {
-                console.log('✅ 找到 Joystick 组件');
-            } else {
-                console.error('❌ 没有找到 Joystick 组件！');
-            }
-        } else {
-            console.error('❌ Joystick 节点未设置！');
+            this._joystickComp = this.joystick.getComponent('Joystick') as any;
         }
         
+        // 🆕 初始化当前Y轴旋转
         this._targetEulerY = this.node.eulerAngles.y;
-        
-        // 测试物理系统
-        this.testPhysicsSystem();
-    }
-    
-    setupRigidBody() {
-        console.log('🔧 设置刚体属性...');
-        
-        // 设置推荐的值
-        this._rigidBody.mass = 10;
-        this._rigidBody.linearDamping = 0.5;  // 降低阻尼以便更容易移动
-        this._rigidBody.angularDamping = 5.0;
-        this._rigidBody.type = RigidBody.Type.DYNAMIC;
-        this._rigidBody.allowSleep = false;
-        this._rigidBody.useGravity = true;
-        
-        console.log('✅ 刚体设置完成');
-        this.debugRigidBodySettings();
-    }
-    
-    testPhysicsSystem() {
-        console.log('🧪 测试物理系统...');
-        
-        // 测试1：检查是否有地面碰撞器
-        const ground = find('Canvas/Ground');
-        if (ground) {
-            const groundCollider = ground.getComponent(Collider);
-            if (groundCollider) {
-                console.log('✅ 找到地面碰撞器');
-            } else {
-                console.error('❌ 地面没有碰撞器！');
-            }
-        } else {
-            console.error('❌ 没有找到地面节点！');
-        }
-        
-        // 测试2：施加一个测试力
-        setTimeout(() => {
-            if (this._rigidBody) {
-                const testForce = new Vec3(500, 0, 0);
-                this._rigidBody.applyForce(testForce);
-                console.log('💥 施加测试力:', testForce);
-                
-                // 检查3秒后是否移动
-                setTimeout(() => {
-                    const pos = this.node.position;
-                    console.log('📍 3秒后位置:', { x: pos.x.toFixed(2), y: pos.y.toFixed(2), z: pos.z.toFixed(2) });
-                    
-                    if (Math.abs(pos.x) > 0.1) {
-                        console.log('✅ 物理系统工作正常！');
-                        this._isPhysicsWorking = true;
-                    } else {
-                        console.error('❌ 物理系统可能有问题！');
-                        this._isPhysicsWorking = false;
-                    }
-                }, 3000);
-            }
-        }, 1000);
     }
     
     update(deltaTime: number) {
-        // 每60帧输出一次调试信息
-        this._debugCounter++;
-        if (this._debugCounter >= 60) {
-            this._debugCounter = 0;
-            this.debugMovement();
-        }
-        
-        if (!this._joystickComp || !this._rigidBody || !this._isPhysicsWorking) {
-            return;
-        }
+        if (!this._joystickComp) return;
         
         const dir = this._joystickComp.dir;
         
         if (!dir.equals(Vec2.ZERO)) {
-            console.log('🎮 摇杆输入:', { x: dir.x.toFixed(2), y: dir.y.toFixed(2) });
+            // 移动逻辑
+            const moveVec = new Vec3(dir.x, 0, -dir.y);
+            this.node.position = this.node.position.add(moveVec.multiplyScalar(this.moveSpeed * deltaTime));
             
-            // 使用简单直接的移动方法
-            this.applySimpleMovement(dir);
-            
-            // 更新方向
+            // 🆕 更新方向
             this.updateDirection(dir);
             
-            // 应用旋转
+            // 🆕 应用Y轴旋转
             this.applyYRotation(deltaTime);
             
             this.stabilizePlayer();
             this.updateMeatPositions();
-        } else {
-            // 没有输入时减速
-            this.applyBraking();
             
+            // console.log(`🎮 方向: ${this._currentDirection}, Y轴角度: ${this._targetEulerY.toFixed(1)}°`);
+        } else {
+            // 摇杆回中时重置方向为5
             if (this._currentDirection !== 5) {
                 this._currentDirection = 5;
             }
         }
-        
-        // 检查自动交付
-        this.checkAutoDelivery(deltaTime);
     }
     
-    // 最简单的移动方法
-    applySimpleMovement(joystickDir: Vec2) {
-        const moveDir = new Vec3(joystickDir.x, 0, -joystickDir.y);
-        
-        // 方法1：直接设置速度（最直接）
-        const targetVelocity = new Vec3(
-            moveDir.x * this.moveSpeed,
-            0,  // Y轴速度设为0，防止浮空
-            moveDir.z * this.moveSpeed
-        );
-        
-        console.log('🎯 设置目标速度:', {
-            x: targetVelocity.x.toFixed(2),
-            z: targetVelocity.z.toFixed(2)
-        });
-        
-        this._rigidBody.setLinearVelocity(targetVelocity);
-    }
-    
-    // 方法2：使用冲量
-    applyMovementWithImpulse(joystickDir: Vec2) {
-        const moveDir = new Vec3(joystickDir.x, 0, -joystickDir.y);
-        const impulse = new Vec3(
-            moveDir.x * this.moveSpeed * 2,
-            0,
-            moveDir.z * this.moveSpeed * 2
-        );
-        
-        console.log('💥 施加冲量:', {
-            x: impulse.x.toFixed(2),
-            z: impulse.z.toFixed(2)
-        });
-        
-        this._rigidBody.applyImpulse(impulse);
-    }
-    
-    // 方法3：使用力
-    applyMovementWithForce(joystickDir: Vec2) {
-        const moveDir = new Vec3(joystickDir.x, 0, -joystickDir.y);
-        const force = new Vec3(
-            moveDir.x * this.moveSpeed * 100,
-            0,
-            moveDir.z * this.moveSpeed * 100
-        );
-        
-        console.log('🔧 施加力:', {
-            x: force.x.toFixed(2),
-            z: force.z.toFixed(2)
-        });
-        
-        this._rigidBody.applyForce(force);
-    }
-    
-    applyBraking() {
-        const currentVelocity = new Vec3();
-        this._rigidBody.getLinearVelocity(currentVelocity);
-        
-        // 直接停止水平移动
-        if (Math.abs(currentVelocity.x) > 0.1 || Math.abs(currentVelocity.z) > 0.1) {
-            currentVelocity.x = 0;
-            currentVelocity.z = 0;
-            this._rigidBody.setLinearVelocity(currentVelocity);
-        }
-    }
-    
-    debugMovement() {
-        if (!this._rigidBody) return;
-        
-        const currentVelocity = new Vec3();
-        this._rigidBody.getLinearVelocity(currentVelocity);
-        const position = this.node.position;
-        
-        console.log('📊 移动状态:', {
-            position: { x: position.x.toFixed(2), y: position.y.toFixed(2), z: position.z.toFixed(2) },
-            velocity: { x: currentVelocity.x.toFixed(2), y: currentVelocity.y.toFixed(2), z: currentVelocity.z.toFixed(2) },
-            physicsWorking: this._isPhysicsWorking
-        });
-    }
-    
-    debugRigidBodySettings() {
-        if (!this._rigidBody) return;
-        
-        console.log('🔍 RigidBody 设置:');
-        console.log('  - 质量:', this._rigidBody.mass);
-        console.log('  - 线性阻尼:', this._rigidBody.linearDamping);
-        console.log('  - 角速度阻尼:', this._rigidBody.angularDamping);
-        console.log('  - 类型:', this._rigidBody.type === RigidBody.Type.DYNAMIC ? 'DYNAMIC' : 'OTHER');
-        console.log('  - 允许睡眠:', this._rigidBody.allowSleep);
-        console.log('  - 使用重力:', this._rigidBody.useGravity);
-    }
-    
-    stabilizeRotation() {
-        const currentEuler = this.node.eulerAngles;
-        
-        if (Math.abs(currentEuler.x) > 1 || Math.abs(currentEuler.z) > 1) {
-            this.node.setRotationFromEuler(0, currentEuler.y, 0);
-        }
-        
-        this._rigidBody.setAngularVelocity(Vec3.ZERO);
-    }
-    
-    // 在浏览器控制台中运行这些方法进行测试
-    testMoveRight() {
-        if (this._rigidBody) {
-            this._rigidBody.setLinearVelocity(new Vec3(5, 0, 0));
-            console.log('➡️ 测试向右移动');
-        }
-    }
-    
-    testMoveForward() {
-        if (this._rigidBody) {
-            this._rigidBody.setLinearVelocity(new Vec3(0, 0, -5));
-            console.log('⬆️ 测试向前移动');
-        }
-    }
-    
-    resetPlayer() {
-        this.node.setPosition(0, 1, 0);
-        this._rigidBody.setLinearVelocity(Vec3.ZERO);
-        this._rigidBody.setAngularVelocity(Vec3.ZERO);
-        console.log('🔄 玩家已重置');
-    }
-
-    // 原有的方向控制和肉块相关方法保持不变...
+    // 🆕 根据摇杆方向更新角色朝向
     updateDirection(joystickDir: Vec2) {
+        // 🆕 直接计算Y轴旋转角度（弧度）
+        // atan2(x, z) 其中x是左右，z是前后（注意Cocos的坐标系）
         const targetAngleRad = Math.atan2(joystickDir.x, -joystickDir.y);
+        
+        // 🆕 转换为角度（0-360度）
         let targetAngleDeg = targetAngleRad * 180 / Math.PI;
         if (targetAngleDeg < 0) targetAngleDeg += 360;
         
+        // 🆕 直接设置目标Y轴角度
         this._targetEulerY = targetAngleDeg;
+        
+        // 🆕 转换为街霸方向（1-9）
         const newDirection = this.angleToStreetFighterDirection(targetAngleDeg);
         
         if (newDirection !== this._currentDirection) {
@@ -304,52 +98,46 @@ export class PlayerController extends Component {
         }
     }
     
+    // 🆕 将角度转换为街霸方向（1-9）
     angleToStreetFighterDirection(angle: number): number {
         const sector = Math.floor((angle + 22.5) / 45) % 8;
         
         switch (sector) {
-            case 0: return 8;
-            case 1: return 9;
-            case 2: return 6;
-            case 3: return 3;
-            case 4: return 2;
-            case 5: return 1;
-            case 6: return 4;
-            case 7: return 7;
+            case 0: return 8; // 上
+            case 1: return 9; // 右上
+            case 2: return 6; // 右
+            case 3: return 3; // 右下
+            case 4: return 2; // 下
+            case 5: return 1; // 左下
+            case 6: return 4; // 左
+            case 7: return 7; // 左上
             default: return 5;
         }
     }
     
+    // 🆕 应用Y轴旋转
     applyYRotation(deltaTime: number) {
         const currentEuler = this.node.eulerAngles;
         const currentY = currentEuler.y;
         
+        // 🆕 处理角度环绕（确保平滑旋转）
         let diff = this._targetEulerY - currentY;
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
         
+        // 🆕 线性插值
         const newY = currentY + diff * this.rotationSpeed * deltaTime;
+        
+        // 🆕 直接设置欧拉角，只改变Y轴
         this.node.setRotationFromEuler(currentEuler.x, newY, currentEuler.z);
     }
     
-    stabilizePlayer() {
-        // 手动保持Y轴位置稳定
-        const currentPos = this.node.position;
-        if (Math.abs(currentPos.y) > 0.1) {
-            // 如果位置有偏差，直接重置位置
-            this.node.setPosition(currentPos.x, 0, currentPos.z);
-            
-            // 🆕 同时重置Y轴速度（正确获取和设置速度）
-            const currentVelocity = new Vec3();
-            this._rigidBody.getLinearVelocity(currentVelocity);
-            this._rigidBody.setLinearVelocity(new Vec3(currentVelocity.x, 0, currentVelocity.z));
-        }
-    }
-    
+    // 🆕 获取当前方向
     getCurrentDirection(): number {
         return this._currentDirection;
     }
     
+    // 🆕 获取方向名称
     getDirectionName(direction?: number): string {
         const dir = direction !== undefined ? direction : this._currentDirection;
         
@@ -367,24 +155,27 @@ export class PlayerController extends Component {
         }
     }
     
+    // 🆕 调试方法：手动设置方向
     setDirection(direction: number) {
         if (direction >= 1 && direction <= 9) {
             this._currentDirection = direction;
             
+            // 🆕 根据方向设置Y轴角度
             let targetAngle = 0;
             switch (direction) {
-                case 1: targetAngle = 225; break;
-                case 2: targetAngle = 180; break;
-                case 3: targetAngle = 135; break;
-                case 4: targetAngle = 270; break;
-                case 5: targetAngle = this.node.eulerAngles.y; break;
-                case 6: targetAngle = 90; break;
-                case 7: targetAngle = 315; break;
-                case 8: targetAngle = 0; break;
-                case 9: targetAngle = 45; break;
+                case 1: targetAngle = 225; break; // ↙️
+                case 2: targetAngle = 180; break; // ⬇️
+                case 3: targetAngle = 135; break; // ↘️
+                case 4: targetAngle = 270; break; // ⬅️
+                case 5: targetAngle = this.node.eulerAngles.y; break; // 🛑 保持
+                case 6: targetAngle = 90; break;  // ➡️
+                case 7: targetAngle = 315; break; // ↖️
+                case 8: targetAngle = 0; break;   // ⬆️
+                case 9: targetAngle = 45; break;  // ↗️
             }
             
             this._targetEulerY = targetAngle;
+            // 🆕 立即应用旋转
             const currentEuler = this.node.eulerAngles;
             this.node.setRotationFromEuler(currentEuler.x, targetAngle, currentEuler.z);
             
@@ -392,6 +183,14 @@ export class PlayerController extends Component {
         }
     }
     
+    stabilizePlayer() {
+        const currentPos = this.node.position;
+        if (currentPos.y !== 0) {
+            this.node.setPosition(currentPos.x, 0, currentPos.z);
+        }
+    }
+    
+    // 🆕 触发器进入事件
     onTriggerEnter(event: ICollisionEvent) {
         if (event.otherCollider.node.name === 'DeliveryZone') {
             this._deliveryZone = event.otherCollider.node;
@@ -400,6 +199,7 @@ export class PlayerController extends Component {
         }
     }
     
+    // 🆕 触发器离开事件
     onTriggerExit(event: ICollisionEvent) {
         if (event.otherCollider.node.name === 'DeliveryZone') {
             this._isInDeliveryZone = false;
@@ -408,8 +208,11 @@ export class PlayerController extends Component {
         }
     }
     
+    // 🆕 自动交付检查
+    // 在 PlayerController.ts 中修改 checkAutoDelivery 方法
     checkAutoDelivery(deltaTime: number) {
         if (this._isInDeliveryZone && this._meatCount > 0) {
+            // 🆕 使用计时器逐个交付
             if (!this._deliveryTimer) {
                 this._deliveryTimer = 0;
                 console.log("🏪 开始自动交付肉块");
@@ -417,64 +220,107 @@ export class PlayerController extends Component {
             
             this._deliveryTimer += deltaTime;
             
-            const deliveryInterval = this.meatPerSec;
+            // 🆕 每1秒交付一块肉（可以根据需要调整速率）
+            const deliveryInterval = this.meatPerSec; // 每秒交付1块
             
             if (this._deliveryTimer >= deliveryInterval) {
                 this.deliverOneMeat();
-                this._deliveryTimer = 0;
+                this._deliveryTimer = 0; // 重置计时器
                 
+                // 🆕 如果还有肉，继续交付；如果没有了，重置计时器
                 if (this._meatCount === 0) {
                     this._deliveryTimer = null;
                     console.log("✅ 所有肉块交付完成");
                 }
             }
         } else {
+            // 🆕 不在交付区域时重置计时器
             this._deliveryTimer = null;
         }
     }
 
+    // 🆕 交付所有肉
     deliverAllMeat() {
         if (this._meatCount === 0) return;
         
         console.log(`交付了 ${this._meatCount} 块肉`);
         
+        // 销毁所有肉块节点
         this._collectedMeats.forEach(meat => {
             if (meat && meat.isValid) {
                 meat.destroy();
             }
         });
         
+        // 重置计数和列表
         this._collectedMeats = [];
         this._meatCount = 0;
+        
+        // 🆕 可以在这里触发交付效果（音效、粒子等）
         this.onMeatDelivered();
     }
     
+    // 🆕 交付单块肉
     deliverOneMeat(): Node | null {
         if (this._meatCount === 0) return null;
         
+        // 🆕 移除最后一块肉但不销毁，返回肉块节点
         const lastMeat = this._collectedMeats.pop();
         if (!lastMeat || !lastMeat.isValid) {
             return null;
         }
         
         this._meatCount = this._collectedMeats.length;
+        
+        // 🆕 重要：从玩家子节点中移除，但不销毁
         lastMeat.parent = null;
+        
+        // 更新剩余肉块的位置
         this.updateMeatPositions();
         
         console.log(`📦 交付1块肉，剩余 ${this._meatCount} 块`);
-        return lastMeat;
+        return lastMeat; // 🆕 返回肉块节点
     }
     
+    // 🆕 交付回调（可以扩展效果）
     onMeatDelivered() {
-        // 交付效果
+        // 可以在这里添加：
+        // - 播放音效
+        // - 显示粒子效果
+        // - 更新UI分数
+        // - 触发游戏事件
     }
     
+    // 开始收集肉块
+    // 在PlayerController中添加更详细的日志
     startCollectingMeat(meat: Node) {
         console.log("开始收集肉块:", meat.name);
+        
+        // 🆕 检查肉块结构
+        console.log("肉块子节点数量:", meat.children.length);
+        console.log("肉块组件:", meat.components);
+        
+        // 🆕 方法1：直接使用肉块节点本身（如果模型在根节点）
+        const collectedMeat = new Node('CollectedMeat_' + this._collectedMeats.length);
+        
+        // 🆕 复制所有组件（包括模型渲染器）
+        meat.components.forEach(component => {
+            if (component.constructor.name !== 'RigidBody' && 
+                component.constructor.name !== 'Collider' &&
+                component.constructor.name !== 'Meat') {
+                // 复制模型相关的组件
+                const componentCopy = collectedMeat.addComponent(component.constructor as any);
+                // 这里需要手动复制属性，但比较复杂
+            }
+        });
+        
+        // 🆕 更简单的方法：直接使用原肉块节点，但移除物理组件
         this.collectMeatDirectly(meat);
     }
     
+    // 🆕 直接收集方法
     collectMeatDirectly(meat: Node) {
+        // 彻底移除物理组件
         const rigidbody = meat.getComponent(RigidBody);
         if (rigidbody) {
             meat.removeComponent(RigidBody);
@@ -485,11 +331,13 @@ export class PlayerController extends Component {
             meat.removeComponent(Collider);
         }
         
-        const meatComp = meat.getComponent(Meat);
+        // 禁用肉块脚本
+        const meatComp = meat.getComponent('Meat');
         if (meatComp) {
             meatComp.enabled = false;
         }
         
+        // 设置为玩家子节点
         meat.parent = this.node;
         const stackPosition = this.calculateMeatStackPosition(this._collectedMeats.length);
         meat.setPosition(stackPosition);
@@ -501,14 +349,16 @@ export class PlayerController extends Component {
         console.log(`成功收集到肉块! 当前数量: ${this._meatCount}`);
     }
     
+    // 计算肉块在背上的叠放位置
     calculateMeatStackPosition(index: number): Vec3 {
         return new Vec3(
-            0,
-            this.meatStackOffset.y * (index + 1),
-            -0.5
+            0, // X轴居中
+            this.meatStackOffset.y * (index + 1), // Y轴向上叠放
+            -0.5 // Z轴稍微在背后
         );
     }
     
+    // 更新所有肉块的位置（跟随玩家移动）
     updateMeatPositions() {
         this._collectedMeats.forEach((meat, index) => {
             if (meat && meat.isValid) {
@@ -518,26 +368,34 @@ export class PlayerController extends Component {
         });
     }
     
+    // 🆕 获取肉块数量
     getMeatCount(): number {
         return this._meatCount;
     }
     
+    // 🆕 检查是否携带肉块
     hasMeat(): boolean {
         return this._meatCount > 0;
     }
 
-    private _cookedMeats: Node[] = [];
+    // 在 PlayerController.ts 中添加
+    private _cookedMeats: Node[] = []; // 煮好的肉块
     private _cookedMeatCount: number = 0;
 
+    // 🆕 获取最后一块肉（用于交付）
     getLastMeat(): Node | null {
         if (this._collectedMeats.length === 0) return null;
         return this._collectedMeats[this._collectedMeats.length - 1];
     }
 
+    // 🆕 获得煮好的肉块
     obtainCookedMeat(cookedMeat: Node) {
         if (!cookedMeat) return;
         
+        // 🆕 设置父节点
         cookedMeat.parent = this.node;
+        
+        // 🆕 计算叠放位置（根据肉块类型）
         const stackPosition = this.calculateCookedMeatStackPosition(this._cookedMeatCount);
         cookedMeat.setPosition(stackPosition);
         
@@ -547,38 +405,51 @@ export class PlayerController extends Component {
         console.log(`🍖 获得煮好的肉块，总数: ${this._cookedMeatCount}`);
     }
 
+    // 🆕 计算煮好肉块的叠放位置
     calculateCookedMeatStackPosition(index: number): Vec3 {
+        // 🆕 根据当前背的肉块类型决定位置
         const baseOffset = this._collectedMeats.length > 0 ? -2 : -1;
         return new Vec3(0, baseOffset + (index * 0.5), -0.5);
     }
 
+    // 🆕 更新所有肉块位置（包括煮好的）
     updateAllMeatPositions() {
+        // 更新原始肉块
         this.updateMeatPositions();
         
+        // 🆕 更新煮好的肉块
         this._cookedMeats.forEach((meat, index) => {
             const targetPos = this.calculateCookedMeatStackPosition(index);
             meat.setPosition(targetPos);
         });
     }
 
+    // 🆕 检查是否有煮好的肉块
     hasCookedMeat(): boolean {
         return this._cookedMeatCount > 0;
     }
 
+    // 🆕 获取煮好肉块数量
     getCookedMeatCount(): number {
         return this._cookedMeatCount;
     }
 
+    // 🆕 交付单块煮好的肉块（返回肉块节点）
     deliverOneCookedMeat(): Node | null {
         if (this._cookedMeatCount === 0) return null;
         
+        // 移除最后一块煮好的肉块
         const lastCookedMeat = this._cookedMeats.pop();
         if (!lastCookedMeat || !lastCookedMeat.isValid) {
             return null;
         }
         
         this._cookedMeatCount = this._cookedMeats.length;
+        
+        // 从玩家子节点中移除，但不销毁
         lastCookedMeat.parent = null;
+        
+        // 更新剩余煮好肉块的位置
         this.updateAllMeatPositions();
         
         console.log(`📦 交付1块煮好肉块，剩余 ${this._cookedMeatCount} 块`);
