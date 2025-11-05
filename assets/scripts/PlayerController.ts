@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, instantiate, SphereCollider } from 'cc';
+import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, ITriggerEvent } from 'cc';
 import { Joystick } from './Joystick';
 import { Meat } from './Meat';
 const { ccclass, property } = _decorator;
@@ -208,10 +208,9 @@ export class PlayerController extends Component {
         // 碰撞结束处理
     }
     
-    // 🆕 触发器进入事件
-    onTriggerEnter(event: ICollisionEvent) {
+    onTriggerEnter(event: ITriggerEvent) {
         const otherNode = event.otherCollider.node;
-        console.log("🔵 进入触发器:", otherNode.name);
+        console.log("🔵 玩家进入触发器:", otherNode.name);
         
         if (otherNode.name === 'DeliveryZone') {
             this._deliveryZone = otherNode;
@@ -228,7 +227,7 @@ export class PlayerController extends Component {
             this.startCollectingMeat(otherNode);
         }
     }
-    
+        
     // 🆕 触发器停留事件
     onTriggerStay(event: ICollisionEvent) {
         // 持续触发逻辑
@@ -413,7 +412,11 @@ export class PlayerController extends Component {
         this.collectMeatDirectly(meat);
     }
     
+// 在 PlayerController 中确保 collectMeatDirectly 方法正确实现
     collectMeatDirectly(meat: Node) {
+        console.log("PlayerController 开始收集肉块:", meat.name);
+        
+        // 🆕 移除物理组件
         const rigidbody = meat.getComponent(RigidBody);
         if (rigidbody) {
             meat.removeComponent(RigidBody);
@@ -424,11 +427,13 @@ export class PlayerController extends Component {
             meat.removeComponent(Collider);
         }
         
+        // 🆕 禁用肉块脚本
         const meatComp = meat.getComponent('Meat');
         if (meatComp) {
             meatComp.enabled = false;
         }
         
+        // 🆕 设置为玩家子节点
         meat.parent = this.node;
         const stackPosition = this.calculateMeatStackPosition(this._collectedMeats.length);
         meat.setPosition(stackPosition);

@@ -15,37 +15,51 @@ export class Meat extends Component {
     private _isAttracted: boolean = false;
     private _targetPlayer: Node = null;
     private _collider: Collider = null;
+    private _rigidBody: RigidBody = null;
     
     setup(spawner: MeatSpawner) {
         this._spawner = spawner;
     }
     
     onLoad() {
-        // 在onLoad中获取碰撞器，确保组件已初始化
-        this._collider = this.getComponent(Collider);
+        // 🆕 获取碰撞器和刚体组件
+        this._collider = this.node.getComponent(Collider);
+        this._rigidBody = this.node.getComponent(RigidBody);
+        
+        // 🆕 重要：肉块必须是触发器，这样玩家才能穿过它
+        if (this._collider) {
+            this._collider.isTrigger = true;
+            
+            // 🆕 注册触发器事件
+            this._collider.on('onTriggerEnter', this.onTriggerEnter, this);
+        }
+        
+        // 🆕 如果有刚体，确保设置合适的属性
+        if (this._rigidBody) {
+            this._rigidBody.type = RigidBody.Type.DYNAMIC;
+            this._rigidBody.mass = 0.1; // 很小的质量
+            this._rigidBody.linearDamping = 0.5;
+            this._rigidBody.angularDamping = 0.5;
+        }
     }
     
     start() {
-        const collider = this.getComponent(Collider);
-            if (collider) {
-                // 移除Is Trigger，让肉块有物理碰撞
-                collider.isTrigger = false;
-                
-                // 添加刚体组件让肉块有物理属性
-                const rigidbody = this.node.addComponent(RigidBody);
-                rigidbody.type = RigidBody.Type.STATIC; // 或者DYNAMIC
-                rigidbody.mass = 1;
-                
-                collider.on('onCollisionEnter', this.onCollisionEnter, this);
-            }
-        }
+        console.log("🥩 肉块初始化完成", {
+            碰撞器: this._collider ? this._collider.constructor.name : '无',
+            isTrigger: this._collider ? this._collider.isTrigger : '无',
+            刚体: this._rigidBody ? '存在' : '无'
+        });
+    }
     
-        onCollisionEnter(event: ICollisionEvent) {
-            if (event.otherCollider.node.name === 'Player') {
-                console.log("物理碰撞检测到玩家!");
-                this.startAttraction(event.otherCollider.node);
-            }
+    // 🆕 使用触发器进入事件
+    onTriggerEnter(event: ITriggerEvent) {
+        const otherNode = event.otherCollider.node;
+        
+        if (otherNode.name === 'Player') {
+            console.log("🔵 触发器检测到玩家!");
+            this.startAttraction(otherNode);
         }
+    }
     
     startAttraction(player: Node) {
         // 防止重复触发
@@ -54,18 +68,17 @@ export class Meat extends Component {
         this._isAttracted = true;
         this._targetPlayer = player;
         
-        // 关闭碰撞器，防止重复触发
+        // 🆕 关闭碰撞器，防止重复触发
         if (this._collider) {
             this._collider.enabled = false;
         }
         
-        // 通知玩家开始收集肉块
-        const playerController = player.getComponent(PlayerController);
-        if (playerController) {
-            playerController.startCollectingMeat(this.node);
-        } else {
-            console.error("玩家缺少PlayerController组件!");
+        // 🆕 关闭刚体，防止物理干扰
+        if (this._rigidBody) {
+            this._rigidBody.enabled = false;
         }
+        
+        console.log("🥩 开始吸附到玩家");
     }
     
     update(deltaTime: number) {
@@ -83,10 +96,11 @@ export class Meat extends Component {
         // 计算移动方向
         const direction = new Vec3();
         Vec3.subtract(direction, targetPos, currentPos);
+        const distance = direction.length();
         
-        // 如果距离很近，直接完成收集
-        if (direction.length() < 0.3) {
-            this.completeCollection();
+        // 🆕 如果距离很近，调用PlayerController的收集方法
+        if (distance < 0.5) {
+            this.transferToPlayer();
             return;
         }
         
@@ -101,20 +115,34 @@ export class Meat extends Component {
         this.node.setPosition(newPos);
     }
     
-    completeCollection() {
-        console.log("肉块收集完成");
+    // 🆕 将肉块转移给PlayerController处理
+    transferToPlayer() {
+        console.log("🥩 肉块接近玩家，准备转移给PlayerController");
         
-        if (this._spawner) {
-            this._spawner.removeMeat(this.node);
+        // 🆕 获取PlayerController并调用收集方法
+        const playerController = this._targetPlayer.getComponent(PlayerController);
+        if (playerController) {
+            // 🆕 停止吸附
+            this._isAttracted = false;
+            
+            // 🆕 调用PlayerController的收集方法
+            playerController.collectMeatDirectly(this.node);
+            
+            // 🆕 从spawner中移除
+            if (this._spawner) {
+                this._spawner.removeMeat(this.node);
+            }
+            
+            console.log("🥩 肉块已转移给PlayerController");
+        } else {
+            console.error("玩家缺少PlayerController组件!");
         }
-        
-        this.node.destroy();
     }
     
     onDestroy() {
         // 清理事件监听
         if (this._collider) {
-            this._collider.off('onTriggerEnter', this.onCollisionEnter, this);
+            this._collider.off('onTriggerEnter', this.onTriggerEnter, this);
         }
     }
 }
