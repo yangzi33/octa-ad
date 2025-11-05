@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, instantiate, BoxCollider, RigidBodyComponent } from 'cc';
+import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, instantiate, SphereCollider } from 'cc';
 import { Joystick } from './Joystick';
 import { Meat } from './Meat';
 const { ccclass, property } = _decorator;
@@ -19,23 +19,13 @@ export class PlayerController extends Component {
 
     @property
     meatPerSec: number = 1.0;
-
-    // 🆕 碰撞相关属性
-    @property
-    colliderRadius: number = 0.5;
-
-    @property
-    colliderHeight: number = 2.0;
-
-    @property
-    colliderOffset: Vec3 = new Vec3(0, 1, 0);
     
     private _joystickComp: Joystick = null;
     private _collectedMeats: Node[] = [];
     private _meatCount: number = 0;
     
-    // 🆕 碰撞组件
-    private _collider: BoxCollider = null;
+    // 🆕 碰撞组件 - 使用节点上已有的
+    private _collider: Collider = null;
     private _rigidBody: RigidBody = null;
     
     private _deliveryZone: Node = null;
@@ -46,7 +36,6 @@ export class PlayerController extends Component {
     private _targetRotation: Quat = new Quat();
     private _targetEulerY: number = 0;
 
-    // 🆕 烹饪区域相关
     private _cookingZone: Node = null;
     private _isInCookingZone: boolean = false;
 
@@ -56,8 +45,8 @@ export class PlayerController extends Component {
     onLoad() {
         this._targetRotation = this.node.rotation.clone();
         
-        // 🆕 初始化碰撞组件
-        this.initCollider();
+        // 🆕 使用节点上已有的碰撞器和刚体
+        this.initExistingCollider();
     }
     
     start() {
@@ -68,48 +57,50 @@ export class PlayerController extends Component {
         this._targetEulerY = this.node.eulerAngles.y;
     }
     
-    // 🆕 初始化碰撞组件
-    initCollider() {
-        // 移除旧的碰撞器（如果存在）
-        // const oldCollider = this.node.getComponent(Collider);
-        // if (oldCollider) {
-        //     this.node.removeComponent(oldCollider);
-        // }
+    // 🆕 使用节点上已有的碰撞器
+    initExistingCollider() {
+        // 获取节点上已有的碰撞器
+        this._collider = this.node.getComponent(Collider);
         
-        // const oldRigidBody = this.node.getComponent(RigidBody);
-        // if (oldRigidBody) {
-        //     this.node.removeComponent(oldRigidBody);
-        // }
+        if (!this._collider) {
+            console.error("❌ 玩家节点上没有碰撞器组件！请在编辑器中添加碰撞器");
+            return;
+        }
         
-        // 🆕 添加球形碰撞器
-        // this._collider = this.node.addComponent(BoxCollider);
-        // this._collider.radius = this.colliderRadius;
-        // this._collider.center = this.colliderOffset;
-        
-        // 🆕 重要：必须设置为 false 才能物理碰撞
+        // 🆕 重要：物理碰撞必须设置为 false
         this._collider.isTrigger = false;
         
-        // 🆕 添加刚体
-        this._rigidBody = this.node.addComponent(RigidBody);
+        // 获取节点上已有的刚体
+        this._rigidBody = this.node.getComponent(RigidBody);
+        
+        if (!this._rigidBody) {
+            console.error("❌ 玩家节点上没有刚体组件！请在编辑器中添加刚体");
+            return;
+        }
+        
+        // 🆕 配置刚体属性
         this._rigidBody.type = RigidBody.Type.DYNAMIC;
         this._rigidBody.mass = 10;
-        this._rigidBody.linearDamping = 0.5;
-        this._rigidBody.angularDamping = 0.8;
+        this._rigidBody.linearDamping = 0.8;
         
-        // 🆕 禁用旋转，只允许在XZ平面移动
-        // this._rigidBody.lockRotation = true;
+        // 🆕 重要：增加角速度阻尼防止旋转
+        this._rigidBody.angularDamping = 100.0; // 增加角速度阻尼
         
         // 🆕 注册碰撞事件
         this._collider.on('onCollisionEnter', this.onCollisionEnter, this);
         this._collider.on('onCollisionStay', this.onCollisionStay, this);
         this._collider.on('onCollisionExit', this.onCollisionExit, this);
         
-        // 🆕 注册触发器事件（用于交付区域等）
+        // 🆕 注册触发器事件
         this._collider.on('onTriggerEnter', this.onTriggerEnter, this);
         this._collider.on('onTriggerStay', this.onTriggerStay, this);
         this._collider.on('onTriggerExit', this.onTriggerExit, this);
         
-        console.log("🎯 玩家物理碰撞器初始化完成");
+        console.log("🎯 使用节点已有碰撞器完成:", {
+            碰撞器类型: this._collider.constructor.name,
+            刚体类型: this._rigidBody.type,
+            isTrigger: this._collider.isTrigger
+        });
     }
     
     update(deltaTime: number) {
@@ -117,21 +108,16 @@ export class PlayerController extends Component {
         
         const dir = this._joystickComp.dir;
         
-        // 🆕 调试输出摇杆方向
-        // if (!dir.equals(Vec2.ZERO)) {
-        //     console.log(`🎮 摇杆方向: x=${dir.x.toFixed(2)}, y=${dir.y.toFixed(2)}`);
-        // }
-        
         if (!dir.equals(Vec2.ZERO)) {
-            // 🆕 使用直接移动方式（先确保能动起来）
-            this.moveDirectly(dir, deltaTime);
+            // 🆕 使用物理移动
+            this.moveWithPhysics(dir, deltaTime);
             
             this.updateDirection(dir);
             this.applyYRotation(deltaTime);
             this.stabilizePlayer();
             this.updateAllMeatPositions();
         } else {
-            // 🆕 停止时重置物理速度
+            // 🆕 停止时设置速度为零
             if (this._rigidBody) {
                 this._rigidBody.setLinearVelocity(Vec3.ZERO);
             }
@@ -140,92 +126,77 @@ export class PlayerController extends Component {
                 this._currentDirection = 5;
             }
         }
+        
+        // 🆕 每帧强制防止旋转
+        this.preventRotation();
+        
+        // 🆕 检查自动交付
+        this.checkAutoDelivery(deltaTime);
     }
     
-    // 🆕 直接移动（绕过物理问题）
-    moveDirectly(dir: Vec2, deltaTime: number) {
-        // 🆕 重要：将2D摇杆方向转换为3D世界方向
-        // 在Cocos 3D中：
-        // - X轴：左右
-        // - Y轴：上下（垂直）
-        // - Z轴：前后
-        const moveVec = new Vec3(dir.x, 0, -dir.y); // 🆕 注意：这里应该是 dir.y 而不是 -dir.y
+    // 🆕 专门的防旋转方法
+    preventRotation() {
+        if (!this._rigidBody) return;
         
-        // 🆕 调试输出移动向量
-        // console.log(`➡️ 移动向量: x=${moveVec.x.toFixed(2)}, y=${moveVec.y.toFixed(2)}, z=${moveVec.z.toFixed(2)}`);
+        // 🆕 强制重置角速度
+        this._rigidBody.setAngularVelocity(Vec3.ZERO);
         
-        // 🆕 方法1：直接设置位置
-        const newPos = this.node.position.add(moveVec.multiplyScalar(this.moveSpeed * deltaTime));
-        this.node.setPosition(newPos);
-        
-        // 🆕 方法2：如果有刚体，同步物理位置
-        if (this._rigidBody) {
-            this._rigidBody.clearForces();
-            this._rigidBody.setLinearVelocity(Vec3.ZERO);
-            this._rigidBody.setAngularVelocity(Vec3.ZERO);
-            
-            // 🆕 可选：使用物理移动（如果上面不行）
-            // const velocity = moveVec.multiplyScalar(this.moveSpeed);
-            // this._rigidBody.setLinearVelocity(velocity);
+        // 🆕 强制保持直立（只保留Y轴旋转）
+        const currentEuler = this.node.eulerAngles;
+        if (Math.abs(currentEuler.x) > 0.1 || Math.abs(currentEuler.z) > 0.1) {
+            this.node.setRotationFromEuler(0, currentEuler.y, 0);
         }
     }
     
-    // 🆕 使用力来移动
-    moveWithForce(dir: Vec2, deltaTime: number) {
+    // 🆕 物理移动方法
+    moveWithPhysics(dir: Vec2, deltaTime: number) {
         if (!this._rigidBody) return;
         
+        // 计算移动方向
         const moveVec = new Vec3(dir.x, 0, -dir.y);
-        moveVec.normalize().multiplyScalar(this.moveSpeed * 50); // 乘以系数
+        moveVec.normalize();
         
-        // 🆕 施加力
-        this._rigidBody.applyForce(moveVec);
+        // 🆕 使用速度进行物理移动
+        const targetVelocity = moveVec.multiplyScalar(this.moveSpeed);
         
-        // 🆕 限制最大速度
+        // 🆕 保持Y轴速度不变，只在XZ平面移动
         const currentVel = new Vec3();
         this._rigidBody.getLinearVelocity(currentVel);
         
-        const maxSpeed = 8;
-        if (currentVel.length() > maxSpeed) {
-            currentVel.normalize().multiplyScalar(maxSpeed);
-            this._rigidBody.setLinearVelocity(currentVel);
-        }
+        this._rigidBody.setLinearVelocity(new Vec3(
+            targetVelocity.x,
+            currentVel.y, // 保持Y轴速度
+            targetVelocity.z
+        ));
     }
     
-    // 🆕 使用物理系统移动
-    moveWithPhysics(dir: Vec2, deltaTime: number) {
-        const moveVec = new Vec3(dir.x, 0, -dir.y);
-        moveVec.normalize().multiplyScalar(this.moveSpeed);
-        
-        // 🆕 使用刚体施加力或速度
+    // 🆕 稳定玩家位置
+    stabilizePlayer() {
         if (this._rigidBody) {
-            // 方法1：设置速度（更直接）
-            const velocity = new Vec3();
-            this._rigidBody.getLinearVelocity(velocity); // 保持Y轴速度
-            this._rigidBody.setLinearVelocity(new Vec3(
-                moveVec.x * this.moveSpeed,
-                velocity.y,
-                moveVec.z * this.moveSpeed
-            ));
+            const currentPos = this.node.position;
             
-            // 方法2：施加力（更物理真实）
-            // this._rigidBody.applyForce(moveVec.multiplyScalar(this.moveSpeed * 100));
-        } else {
-            // 备用：直接移动
-            this.node.position = this.node.position.add(moveVec.multiplyScalar(deltaTime));
+            // 🆕 如果玩家漂浮或下沉，重置Y轴
+            if (Math.abs(currentPos.y) > 0.1) {
+                this.node.setPosition(currentPos.x, 0, currentPos.z);
+                
+                // 🆕 重置Y轴速度
+                const currentVel = new Vec3();
+                this._rigidBody.getLinearVelocity(currentVel);
+                this._rigidBody.setLinearVelocity(new Vec3(currentVel.x, 0, currentVel.z));
+            }
+            
+            // 🆕 防止不必要的旋转（双重保险）
+            this._rigidBody.setAngularVelocity(Vec3.ZERO);
         }
     }
     
     // 🆕 物理碰撞进入
     onCollisionEnter(event: ICollisionEvent) {
-        console.log("💥 玩家发生物理碰撞:", event.otherCollider.node.name);
-        
-        // 处理物理碰撞逻辑
         const otherNode = event.otherCollider.node;
+        console.log("💥 玩家碰撞到:", otherNode.name);
         
-        // 示例：与墙壁碰撞
         if (otherNode.name.includes('Wall') || otherNode.name.includes('Obstacle')) {
             console.log("🚧 撞到障碍物");
-            // 可以添加碰撞效果，如震动、音效等
         }
     }
     
@@ -237,7 +208,7 @@ export class PlayerController extends Component {
         // 碰撞结束处理
     }
     
-    // 🆕 触发器进入事件（增强版）
+    // 🆕 触发器进入事件
     onTriggerEnter(event: ICollisionEvent) {
         const otherNode = event.otherCollider.node;
         console.log("🔵 进入触发器:", otherNode.name);
@@ -260,24 +231,17 @@ export class PlayerController extends Component {
     
     // 🆕 触发器停留事件
     onTriggerStay(event: ICollisionEvent) {
-        const otherNode = event.otherCollider.node;
-        
-        // 可以在这里处理持续触发逻辑
-        if (otherNode.name === 'CookingZone' && this.hasMeat()) {
-            // 在烹饪区域且携带肉块
-            // console.log("🔥 在烹饪区域携带肉块");
-        }
+        // 持续触发逻辑
     }
     
-    // 🆕 触发器离开事件（增强版）
+    // 🆕 触发器离开事件
     onTriggerExit(event: ICollisionEvent) {
         const otherNode = event.otherCollider.node;
-        // console.log("🔴 离开触发器:", otherNode.name);
         
         if (otherNode.name === 'DeliveryZone') {
             this._isInDeliveryZone = false;
             this._deliveryZone = null;
-            this._deliveryTimer = null; // 🆕 重置交付计时器
+            this._deliveryTimer = null;
             console.log("离开交付区域");
         }
         else if (otherNode.name === 'CookingZone') {
@@ -290,61 +254,12 @@ export class PlayerController extends Component {
     // 🆕 检查烹饪交互
     checkCookingInteraction(deltaTime: number) {
         if (this._isInCookingZone && this.hasMeat()) {
-            // 🆕 在烹饪区域且携带肉块，可以开始烹饪
-            // 这里可以添加烹饪进度逻辑
-            // console.log("🍳 可以烹饪肉块");
+            // 烹饪逻辑
         }
     }
     
-    // 🆕 稳定玩家位置（物理版本）
-// 🆕 修正稳定玩家方法
-    stabilizePlayer() {
-        if (this._rigidBody) {
-            const currentPos = this.node.position;
-            
-            // 🆕 如果玩家漂浮或下沉，重置Y轴
-            if (Math.abs(currentPos.y) > 0.1) {
-                this.node.setPosition(currentPos.x, 0, currentPos.z);
-                
-                // 🆕 重置Y轴速度
-                const currentVel = new Vec3();
-                this._rigidBody.getLinearVelocity(currentVel);
-                this._rigidBody.setLinearVelocity(new Vec3(currentVel.x, 0, currentVel.z));
-            }
-            
-            // 🆕 防止不必要的旋转
-            this._rigidBody.setAngularVelocity(Vec3.ZERO);
-        }
-    }
-    
-    // 🆕 获取碰撞器组件
-    getCollider(): Collider {
-        return this._collider;
-    }
-    
-    // 🆕 获取刚体组件
-    getRigidBody(): RigidBody {
-        return this._rigidBody;
-    }
-    
-    // 🆕 设置碰撞器是否启用
-    setColliderEnabled(enabled: boolean) {
-        if (this._collider) {
-            this._collider.enabled = enabled;
-        }
-    }
-    
-    // 🆕 临时无敌（禁用碰撞）
-    setInvincible(duration: number) {
-        this.setColliderEnabled(false);
-        
-        // 定时恢复碰撞
-        this.scheduleOnce(() => {
-            this.setColliderEnabled(true);
-        }, duration);
-    }
 
-    // 以下保持原有方法不变，只添加必要的碰撞相关逻辑
+    // 以下保持原有方法不变...
     updateDirection(joystickDir: Vec2) {
         const targetAngleRad = Math.atan2(joystickDir.x, -joystickDir.y);
         let targetAngleDeg = targetAngleRad * 180 / Math.PI;

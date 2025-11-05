@@ -455,14 +455,6 @@
     },
     "rotationSpeed": 10,
     "meatPerSec": 1,
-    "colliderRadius": 0.5,
-    "colliderHeight": 5,
-    "colliderOffset": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 1,
-      "z": 0
-    },
     "_id": "06xIzZm0NNI5c8Gutz0zyK"
   },
   {
