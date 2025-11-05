@@ -107,7 +107,7 @@ export class Joystick extends Component {
             this.bg.setPosition(localPos);
             this.btn.setPosition(Vec3.ZERO);
             
-            console.log("📍 摇杆显示在位置:", localPos);
+            // console.log("📍 摇杆显示在位置:", localPos);
         } catch (error) {
             console.error("❌ 显示摇杆位置错误:", error);
             // 🆕 备用方案：使用固定位置
@@ -169,7 +169,7 @@ export class Joystick extends Component {
             this.setVisible(false);
         }
         
-        console.log("🔄 摇杆重置");
+        // console.log("🔄 摇杆重置");
     }
     
     // 🆕 设置可见性

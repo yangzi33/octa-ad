@@ -44,11 +44,11 @@ export class Meat extends Component {
     }
     
     start() {
-        console.log("🥩 肉块初始化完成", {
-            碰撞器: this._collider ? this._collider.constructor.name : '无',
-            isTrigger: this._collider ? this._collider.isTrigger : '无',
-            刚体: this._rigidBody ? '存在' : '无'
-        });
+        // console.log("🥩 肉块初始化完成", {
+        //     碰撞器: this._collider ? this._collider.constructor.name : '无',
+        //     isTrigger: this._collider ? this._collider.isTrigger : '无',
+        //     刚体: this._rigidBody ? '存在' : '无'
+        // });
     }
     
     // 🆕 使用触发器进入事件

@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Collider, ITriggerEvent } from 'cc';
+import { MeatDeliverySystem } from './MeatDeliverySystem';
 const { ccclass, property } = _decorator;
 
 @ccclass('DeliveryZone')
@@ -29,6 +30,7 @@ export class DeliveryZone extends Component {
     
     update(deltaTime: number) {
         if (this._playerInZone && this.autoDelivery) {
+            console.log("222");
             this.continuousDelivery(deltaTime);
         }
     }
@@ -74,6 +76,7 @@ export class DeliveryZone extends Component {
         const interval = 1.0 / this.deliveryRate;
         
         if (this._deliveryTimer >= interval) {
+            console.log("111");
             this.tryDeliverMeat();
             this._deliveryTimer = 0;
         }
@@ -87,7 +90,7 @@ export class DeliveryZone extends Component {
         
         // 🆕 使用类型断言
         const playerController = this._playerNode.getComponent('PlayerController') as any;
-        const deliverySystem = this.meatDeliverySystem.getComponent('MeatDeliverySystem') as any;
+        const deliverySystem = this.meatDeliverySystem.getComponent('MeatDeliverySystem') as MeatDeliverySystem;
         
         if (!playerController || !deliverySystem) {
             console.error("❌ 无法交付：缺少组件");
