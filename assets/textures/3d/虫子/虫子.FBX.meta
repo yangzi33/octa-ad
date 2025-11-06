@@ -1,0 +1,186 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "b533aa45-7e58-4a66-974f-f5d0ad909c8b",
+  "files": [
+    "__original-animation-0.bin"
+  ],
+  "subMetas": {
+    "7b576": {
+      "importer": "gltf-mesh",
+      "uuid": "b533aa45-7e58-4a66-974f-f5d0ad909c8b@7b576",
+      "displayName": "",
+      "id": "7b576",
+      "name": "WM_Monster_02.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 1984
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "73b7f": {
+      "importer": "gltf-animation",
+      "uuid": "b533aa45-7e58-4a66-974f-f5d0ad909c8b@73b7f",
+      "displayName": "",
+      "id": "73b7f",
+      "name": "Take 001.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 3.3333332538604736
+        },
+        "events": []
+      },
+      "ver": "1.0.18",
+      "imported": true,
+      "files": [
+        ".bin"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "b533aa45-7e58-4a66-974f-f5d0ad909c8b@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 31
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a96a6": {
+      "importer": "texture",
+      "uuid": "b533aa45-7e58-4a66-974f-f5d0ad909c8b@a96a6",
+      "displayName": "",
+      "id": "a96a6",
+      "name": "贴图 #1.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/textures/3d/虫子/20250729-173734.jpeg"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "d90a4": {
+      "importer": "gltf-material",
+      "uuid": "b533aa45-7e58-4a66-974f-f5d0ad909c8b@d90a4",
+      "displayName": "",
+      "id": "d90a4",
+      "name": "01 - Default.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "146b8": {
+      "importer": "gltf-scene",
+      "uuid": "b533aa45-7e58-4a66-974f-f5d0ad909c8b@146b8",
+      "displayName": "",
+      "id": "146b8",
+      "name": "虫子.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "贴图 #1",
+        "uri": "db://assets/textures/3d/虫子/20250729-173734.jpeg"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "Take 001",
+        "duration": 3.3333332538604736,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "Take 001",
+            "from": 0,
+            "to": 3.3333332538604736,
+            "wrapMode": 2,
+            "previousId": "73b7f"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "b533aa45-7e58-4a66-974f-f5d0ad909c8b@7b576"
+      ],
+      "skeletons": [
+        "b533aa45-7e58-4a66-974f-f5d0ad909c8b@438fe"
+      ],
+      "textures": [
+        "b533aa45-7e58-4a66-974f-f5d0ad909c8b@a96a6"
+      ],
+      "materials": [
+        "b533aa45-7e58-4a66-974f-f5d0ad909c8b@d90a4"
+      ],
+      "scenes": [
+        "b533aa45-7e58-4a66-974f-f5d0ad909c8b@146b8"
+      ]
+    }
+  }
+}
