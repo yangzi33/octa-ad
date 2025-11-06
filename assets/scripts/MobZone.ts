@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, Vec3, MeshRenderer, Collider, ITriggerEvent, BoxCollider } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, Vec3, MeshRenderer, Collider, ITriggerEvent, BoxCollider, Quat } from 'cc';
 import { MobController } from './MobController';
 import { BattlePlayerController } from './BattlePlayerController';
 const { ccclass, property } = _decorator;
@@ -98,6 +98,11 @@ export class MobZone extends Component {
         const mob = instantiate(this.mobPrefab);
         const spawnPos = this.getRandomPositionInPlane();
         mob.setPosition(spawnPos);
+        
+        // 🆕 给怪物一个随机的Y轴旋转角度
+        const randomRotationY = Math.random() * 360; // 0 到 360 度
+        mob.setRotationFromEuler(0, randomRotationY, 0);
+        
         mob.parent = this.mobContainer;
 
         const mobController = mob.getComponent(MobController);
@@ -107,7 +112,7 @@ export class MobZone extends Component {
         }
 
         this._mobs.push(mob);
-        console.log(`👹 生成怪物在位置: ${spawnPos.toString()}`);
+        console.log(`👹 生成怪物在位置: ${spawnPos.toString()}, 旋转角度: ${randomRotationY.toFixed(1)}°`);
     }
 
     getRandomPositionInPlane(): Vec3 {
@@ -249,6 +254,10 @@ export class MobZone extends Component {
 
         const spawnPos = this.getRandomPositionInPlane();
         mob.setPosition(spawnPos);
+        
+        // 🆕 重生时也给一个随机旋转
+        const randomRotationY = Math.random() * 360;
+        mob.setRotationFromEuler(0, randomRotationY, 0);
         
         if (mobController) {
             mobController.setSpawnPosition(spawnPos);
