@@ -7315,10 +7315,10 @@
     "tableNode": {
       "__id__": 401
     },
-    "deliveryTime": 2,
+    "deliveryTime": 1,
     "flightHeight": 3,
     "disassembleDelay": 0.5,
-    "sliceMeatHeight": 0.2,
+    "sliceMeatHeight": 0.1,
     "baseHeight": 0,
     "numSlicedPerMeat": 3,
     "slicedMeatPrefab": {

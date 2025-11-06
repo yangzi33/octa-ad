@@ -67,22 +67,24 @@ export class MeatDeliverySystem extends Component {
         // 第一步：飞到meatStartNode位置
         tween(meatNode)
             .to(0.8, { 
-                position: targetPos
+                position: targetPos,
+                eulerAngles: v3(0, 90, 0) // 🆕 在飞行过程中旋转到90度
             }, {
                 onUpdate: (target: Node, ratio: number) => {
                     const currentPos = this.calculateParabolaPosition(startPos, targetPos, ratio);
                     target.setWorldPosition(currentPos);
-                    target.setRotationFromEuler(0, ratio * 360, 0);
+                    // 🆕 移除了飞行过程中的持续旋转
                 }
             })
             .call(() => {
                 console.log("✅ 肉块到达meatStartNode");
+                // 🆕 确保旋转已经完成
+                meatNode.setRotationFromEuler(0, 90, 0);
                 // 第二步：滚动到meatEndNode
                 this.rollToEndNode(meatNode, onComplete);
             })
             .start();
-    }
-    
+    }    
     // 滚动到meatEndNode
     rollToEndNode(meatNode: Node, onComplete?: Function) {
         if (!this.meatEndNode) return;
@@ -95,7 +97,6 @@ export class MeatDeliverySystem extends Component {
         tween(meatNode)
             .to(this.deliveryTime, {
                 position: targetPos,
-                eulerAngles: v3(360, 360, 360)
             })
             .call(() => {
                 console.log("✅ 肉块到达meatEndNode");
