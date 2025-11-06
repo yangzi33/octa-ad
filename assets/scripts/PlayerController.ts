@@ -444,6 +444,7 @@ export class PlayerController extends Component {
         }
     }
     
+    
     stabilizePlayer() {
         if (this._rigidBody) {
             const currentPos = this.node.position;
