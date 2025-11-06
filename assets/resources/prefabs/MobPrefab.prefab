@@ -225,14 +225,16 @@
       "__id__": 14
     },
     "maxHealth": 100,
-    "attackDamage": 5,
     "moveSpeed": 3,
-    "attackRange": 2,
     "animComponent": null,
     "idleAnim": "Take 001",
     "walkAnim": "Take 001",
-    "attackAnim": "Take 001",
     "dieAnim": "Take 001",
+    "meatPrefab": {
+      "__uuid__": "cdae1bb9-bdc0-4d50-ae20-7d3177519ca0",
+      "__expectedType__": "cc.Prefab"
+    },
+    "otherMobPrefabs": [],
     "_id": ""
   },
   {
@@ -276,7 +278,7 @@
     "node": {
       "__id__": 1
     },
-    "_enabled": true,
+    "_enabled": false,
     "__prefab": {
       "__id__": 18
     },

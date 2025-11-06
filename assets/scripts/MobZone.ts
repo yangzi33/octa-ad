@@ -89,6 +89,11 @@ export class MobZone extends Component {
         }
     }
 
+    addMob(mob: Node) {
+        this._mobs.push(mob);
+        console.log(`👹 添加新怪物到MobZone，当前总数: ${this._mobs.length}`);
+    }
+
     spawnSingleMob() {
         if (!this.mobPrefab) {
             console.error("❌ MobPrefab 未设置");

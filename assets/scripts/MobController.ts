@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Animation } from 'cc';
+import { _decorator, Component, Node, Vec3, Animation, Collider, ICollisionEvent, Prefab, instantiate } from 'cc';
 import { BattlePlayerController } from './BattlePlayerController';
 import { MobZone } from './MobZone';
 const { ccclass, property } = _decorator;
@@ -9,13 +9,7 @@ export class MobController extends Component {
     maxHealth: number = 100;
 
     @property
-    attackDamage: number = 5;
-
-    @property
     moveSpeed: number = 3;
-
-    @property
-    attackRange: number = 2;
 
     @property(Animation)
     animComponent: Animation = null;
@@ -27,17 +21,20 @@ export class MobController extends Component {
     walkAnim: string = "walk";
 
     @property
-    attackAnim: string = "attack";
-
-    @property
     dieAnim: string = "die";
+
+    // 🆕 肉预制体属性
+    @property(Prefab)
+    meatPrefab: Prefab = null;
+
+    // 🆕 其他怪物预制体数组（用于随机生成）
+    @property([Prefab])
+    otherMobPrefabs: Prefab[] = [];
 
     private _currentHealth: number = 100;
     private _player: Node = null;
     private _battlePlayerController: BattlePlayerController = null;
     private _isDead: boolean = false;
-    private _isAttacking: boolean = false;
-    private _attackCooldown: number = 0;
     private _spawnPosition: Vec3 = new Vec3();
     private _isReturningToSpawn: boolean = false;
     private _mobZone: MobZone = null;
@@ -49,6 +46,13 @@ export class MobController extends Component {
     onLoad() {
         this._currentHealth = this.maxHealth;
         this._spawnPosition = this.node.position.clone();
+        
+        // 🆕 确保怪物有碰撞器
+        let collider = this.getComponent(Collider);
+        if (!collider) {
+            collider = this.addComponent(Collider);
+            console.log("🔧 为怪物添加碰撞器");
+        }
     }
 
     start() {
@@ -58,13 +62,8 @@ export class MobController extends Component {
     update(deltaTime: number) {
         if (this._isDead) return;
 
-        // 攻击冷却
-        if (this._attackCooldown > 0) {
-            this._attackCooldown -= deltaTime;
-        }
-
         // 如果有玩家目标且玩家在区域内，追逐玩家
-        if (this._player && this.isPlayerInZone() && !this._isAttacking) {
+        if (this._player && this.isPlayerInZone()) {
             this.chasePlayer(deltaTime);
         } 
         // 否则返回生成点
@@ -141,17 +140,10 @@ export class MobController extends Component {
     }
 
     chasePlayer(deltaTime: number) {
-        if (!this._player || this._isAttacking) return;
+        if (!this._player) return;
 
         const playerPos = this._player.position;
         const mobPos = this.node.position;
-        const distance = Vec3.distance(playerPos, mobPos);
-
-        // 如果在攻击范围内，攻击玩家
-        if (distance <= this.attackRange) {
-            this.attackPlayer();
-            return;
-        }
 
         // 移动向玩家
         const direction = new Vec3();
@@ -179,36 +171,6 @@ export class MobController extends Component {
         this.playAnimation(this.walkAnim);
     }
 
-    attackPlayer() {
-        if (this._isAttacking || this._attackCooldown > 0) return;
-
-        this._isAttacking = true;
-        this.playAnimation(this.attackAnim);
-        console.log("👹 怪物开始攻击玩家");
-
-        // 在动画播放到攻击帧时调用 onAttackHit
-        setTimeout(() => {
-            this.onAttackHit();
-        }, 500);
-    }
-
-    onAttackHit() {
-        if (!this._battlePlayerController || this._isDead) return;
-
-        console.log(`👹 怪物攻击玩家，造成 ${this.attackDamage} 点伤害`);
-        this._battlePlayerController.takeDamage(this.attackDamage);
-        
-        this._isAttacking = false;
-        this._attackCooldown = 1.0; // 1秒攻击冷却
-        
-        // 攻击后回到空闲状态
-        setTimeout(() => {
-            if (!this._isDead) {
-                this.playAnimation(this.idleAnim);
-            }
-        }, 200);
-    }
-
     takeDamage(damage: number) {
         if (this._isDead) return;
 
@@ -226,15 +188,101 @@ export class MobController extends Component {
         
         console.log("💀 怪物死亡");
 
-        // 通知MobZone重生
+        // 🆕 生成肉预制体
+        this.spawnMeat();
+        
+        // 🆕 随机生成另一个怪物
+        this.spawnRandomMob();
+        
+        // 🆕 通知MobZone怪物死亡（用于更新计数等）
         if (this._mobZone) {
             this._mobZone.onMobDied(this.node);
         }
 
-        // 延迟隐藏
+        // 🆕 销毁当前怪物节点
         setTimeout(() => {
-            this.node.active = false;
+            this.node.destroy();
         }, 2000);
+    }
+
+    // 🆕 生成肉预制体
+    spawnMeat() {
+        if (!this.meatPrefab) {
+            console.warn("⚠️ 没有设置肉预制体");
+            return;
+        }
+
+        const meat = instantiate(this.meatPrefab);
+        const meatPosition = this.node.position.clone();
+        
+        // 稍微提高肉的位置，避免陷入地面
+        meatPosition.y += 0.5;
+        
+        meat.setPosition(meatPosition);
+        
+        // 🆕 给肉一个随机旋转
+        const randomRotationY = Math.random() * 360;
+        meat.setRotationFromEuler(0, randomRotationY, 0);
+        
+        // 🆕 将肉放在场景中（与怪物容器相同）
+        if (this._mobZone && this._mobZone.mobContainer) {
+            meat.parent = this._mobZone.mobContainer;
+        } else {
+            meat.parent = this.node.scene;
+        }
+        
+        console.log("🥩 生成肉预制体");
+    }
+
+    // 🆕 随机生成另一个怪物
+    spawnRandomMob() {
+        if (!this.otherMobPrefabs || this.otherMobPrefabs.length === 0) {
+            console.warn("⚠️ 没有设置其他怪物预制体");
+            return;
+        }
+
+        // 从其他怪物预制体中随机选择一个
+        const randomIndex = Math.floor(Math.random() * this.otherMobPrefabs.length);
+        const randomMobPrefab = this.otherMobPrefabs[randomIndex];
+        
+        if (!randomMobPrefab) {
+            console.warn("⚠️ 随机选择的怪物预制体无效");
+            return;
+        }
+
+        const newMob = instantiate(randomMobPrefab);
+        const spawnPos = this.node.position.clone();
+        
+        // 稍微偏移位置，避免重叠
+        spawnPos.x += (Math.random() - 0.5) * 2;
+        spawnPos.z += (Math.random() - 0.5) * 2;
+        
+        newMob.setPosition(spawnPos);
+        
+        // 🆕 给新怪物一个随机旋转
+        const randomRotationY = Math.random() * 360;
+        newMob.setRotationFromEuler(0, randomRotationY, 0);
+        
+        // 🆕 将新怪物放在怪物容器中
+        if (this._mobZone && this._mobZone.mobContainer) {
+            newMob.parent = this._mobZone.mobContainer;
+        } else {
+            newMob.parent = this.node.scene;
+        }
+
+        // 🆕 设置新怪物的MobZone引用
+        const newMobController = newMob.getComponent(MobController);
+        if (newMobController && this._mobZone) {
+            newMobController.setMobZone(this._mobZone);
+            newMobController.setSpawnPosition(spawnPos);
+        }
+        
+        // 🆕 通知MobZone添加新怪物到列表
+        if (this._mobZone) {
+            this._mobZone.addMob(newMob);
+        }
+        
+        console.log(`👹 随机生成新怪物: ${randomIndex}`);
     }
 
     playAnimation(animName: string) {
@@ -253,8 +301,6 @@ export class MobController extends Component {
     reset() {
         this._currentHealth = this.maxHealth;
         this._isDead = false;
-        this._isAttacking = false;
-        this._attackCooldown = 0;
         this._player = null;
         this._battlePlayerController = null;
         this._isReturningToSpawn = false;
