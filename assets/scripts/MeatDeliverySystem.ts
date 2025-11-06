@@ -9,10 +9,10 @@ export class MeatDeliverySystem extends Component {
     @property(Node)
     meatEndNode: Node = null;
     
-    @property(Node) // 🆕 新增分解节点
+    @property(Node)
     disassembleNode: Node = null;
     
-    @property(Node) // 🆕 新增桌子节点
+    @property(Node)
     tableNode: Node = null;
     
     @property
@@ -22,13 +22,25 @@ export class MeatDeliverySystem extends Component {
     flightHeight: number = 3.0;
     
     @property
-    disassembleDelay: number = 0.5; // 🆕 分解延迟时间
+    disassembleDelay: number = 0.5;
+    
+    @property
+    sliceMeatHeight: number = 0.5; // 每个切好肉块的高度
+    
+    @property
+    baseHeight: number = 0.0; // 🆕 基础高度，用于调整堆叠起始位置
     
     @property(Prefab)
     slicedMeatPrefab: Prefab = null;
     
     private _slicedMeats: Node[] = []; // 在tableNode叠放的切好的肉块
     private _slicedMeatCount: number = 0;
+    
+    onLoad() {
+        // 🆕 初始化时重置计数
+        this._slicedMeatCount = 0;
+        this._slicedMeats = [];
+    }
     
     // 交付肉块（从玩家背上飞过来）
     deliverMeat(meatNode: Node, onComplete?: Function) {
@@ -85,13 +97,13 @@ export class MeatDeliverySystem extends Component {
             .call(() => {
                 console.log("✅ 肉块到达meatEndNode");
                 
-                // 🆕 第三步：从meatEndNode飞到DisassembleNode
+                // 第三步：从meatEndNode飞到DisassembleNode
                 this.flyToDisassembleNode(meatNode, onComplete);
             })
             .start();
     }
     
-    // 🆕 飞到分解节点
+    // 飞到分解节点
     flyToDisassembleNode(meatNode: Node, onComplete?: Function) {
         if (!this.disassembleNode) {
             console.error("❌ 缺少disassembleNode");
@@ -116,7 +128,7 @@ export class MeatDeliverySystem extends Component {
             .call(() => {
                 console.log("✅ 肉块到达DisassembleNode");
                 
-                // 🆕 延迟后分解肉块
+                // 延迟后分解肉块
                 this.scheduleOnce(() => {
                     this.disassembleMeat(meatNode, onComplete);
                 }, this.disassembleDelay);
@@ -124,14 +136,14 @@ export class MeatDeliverySystem extends Component {
             .start();
     }
     
-    // 🆕 分解肉块
+    // 分解肉块
     disassembleMeat(meatNode: Node, onComplete?: Function) {
         console.log("🔪 开始分解肉块");
         
         // 销毁原始肉块
         meatNode.destroy();
         
-        // 🆕 创建切好的肉块并飞到桌子
+        // 创建切好的肉块并飞到桌子
         this.createAndFlySlicedMeatToTable(() => {
             if (onComplete) {
                 onComplete();
@@ -139,7 +151,7 @@ export class MeatDeliverySystem extends Component {
         });
     }
     
-    // 🆕 创建切好的肉块并飞到桌子
+    // 创建切好的肉块并飞到桌子
     createAndFlySlicedMeatToTable(onComplete?: Function) {
         if (!this.slicedMeatPrefab || !this.disassembleNode || !this.tableNode) {
             console.error("❌ 创建切好的肉块失败：缺少必要节点或预制体");
@@ -154,14 +166,14 @@ export class MeatDeliverySystem extends Component {
         
         console.log("🔪 切好的肉块已创建，开始飞向桌子");
         
-        // 🆕 计算在桌子上的堆叠位置（垂直堆叠）
-        const stackPosition = this.calculateSlicedMeatStackPosition(this._slicedMeatCount);
-        const tableWorldPos = this.tableNode.worldPosition.clone();
-        const targetWorldPos = new Vec3(
-            tableWorldPos.x + stackPosition.x,
-            tableWorldPos.y + stackPosition.y,
-            tableWorldPos.z + stackPosition.z
-        );
+        // 🆕 使用数组长度作为索引，而不是_slicedMeatCount
+        const stackIndex = this._slicedMeats.length;
+        const stackPosition = this.calculateSlicedMeatStackPosition(stackIndex);
+        
+        console.log(`📊 堆叠索引: ${stackIndex}, 堆叠位置:`, stackPosition);
+        
+        // 将本地堆叠位置转换为世界坐标
+        const targetWorldPos = this.convertLocalToWorld(this.tableNode, stackPosition);
         
         const startPos = slicedMeat.worldPosition.clone();
         
@@ -184,12 +196,12 @@ export class MeatDeliverySystem extends Component {
                 slicedMeat.setPosition(stackPosition);
                 
                 this._slicedMeats.push(slicedMeat);
-                this._slicedMeatCount++;
+                this._slicedMeatCount = this._slicedMeats.length; // 🆕 保持同步
                 
                 console.log(`🔪 切好的肉块堆叠完成，总数: ${this._slicedMeatCount}`);
                 
-                // 调试显示堆叠状态
-                this.debugSlicedMeatStack();
+                // 🆕 立即验证堆叠位置
+                this.validateStackPositions();
                 
                 if (onComplete) {
                     onComplete();
@@ -198,13 +210,21 @@ export class MeatDeliverySystem extends Component {
             .start();
     }
     
-    // 🆕 计算切好肉块在桌子上的堆叠位置（垂直堆叠）
+    // 计算切好肉块在桌子上的堆叠位置（垂直堆叠）
     calculateSlicedMeatStackPosition(index: number): Vec3 {
-        // 在tableNode的本地坐标系内垂直堆叠
-        return new Vec3(0, index * 0.5, 0); // 每个肉块高度偏移0.5
+        // 🆕 使用基础高度 + 索引 * 肉块高度
+        return new Vec3(0, this.baseHeight + index * this.sliceMeatHeight, 0);
     }
     
-    // 🆕 获取切好的肉块（被玩家拿走）
+    // 将本地坐标转换为世界坐标
+    convertLocalToWorld(node: Node, localPos: Vec3): Vec3 {
+        const worldPos = new Vec3();
+        // 使用矩阵变换将本地坐标转换为世界坐标
+        Vec3.transformMat4(worldPos, localPos, node.worldMatrix);
+        return worldPos;
+    }
+    
+    // 获取切好的肉块（被玩家拿走）
     takeSlicedMeat(): Node | null {
         if (this._slicedMeatCount === 0) {
             console.log("⚠️ 没有切好的肉块可获取");
@@ -212,7 +232,7 @@ export class MeatDeliverySystem extends Component {
         }
         
         const slicedMeat = this._slicedMeats.pop();
-        this._slicedMeatCount--;
+        this._slicedMeatCount = this._slicedMeats.length; // 🆕 保持同步
         
         if (slicedMeat) {
             // 从tableNode中移除
@@ -227,15 +247,42 @@ export class MeatDeliverySystem extends Component {
         return slicedMeat;
     }
     
-    // 🆕 更新切好肉块的位置
+    // 更新切好肉块的位置
     updateSlicedMeatPositions() {
+        // 🆕 重新计算所有肉块的位置，确保堆叠正确
         this._slicedMeats.forEach((meat, index) => {
             const targetPos = this.calculateSlicedMeatStackPosition(index);
             meat.setPosition(targetPos);
         });
+        
+        // 🆕 验证堆叠位置是否正确
+        this.validateStackPositions();
     }
     
-    // 🆕 抛物线位置计算
+    // 🆕 验证堆叠位置是否正确
+    validateStackPositions() {
+        console.log("=== 验证堆叠位置 ===");
+        console.log(`肉块总数: ${this._slicedMeatCount}, 数组长度: ${this._slicedMeats.length}`);
+        
+        this._slicedMeats.forEach((meat, index) => {
+            const expectedPos = this.calculateSlicedMeatStackPosition(index);
+            const actualPos = meat.position;
+            const isConsistent = Math.abs(expectedPos.y - actualPos.y) < 0.01;
+            
+            console.log(`肉块 ${index}: 
+                期望位置=(${expectedPos.x}, ${expectedPos.y}, ${expectedPos.z}), 
+                实际位置=(${actualPos.x}, ${actualPos.y}, ${actualPos.z}), 
+                是否一致=${isConsistent}`);
+                
+            if (!isConsistent) {
+                console.warn(`❌ 位置不一致! 正在修正...`);
+                meat.setPosition(expectedPos);
+            }
+        });
+        console.log("===================");
+    }
+    
+    // 抛物线位置计算
     calculateParabolaPosition(start: Vec3, end: Vec3, ratio: number): Vec3 {
         const current = new Vec3();
         Vec3.lerp(current, start, end, ratio);
@@ -246,17 +293,17 @@ export class MeatDeliverySystem extends Component {
         return current;
     }
     
-    // 🆕 获取切好肉块数量
+    // 获取切好肉块数量
     getSlicedMeatCount(): number {
         return this._slicedMeatCount;
     }
     
-    // 🆕 检查是否有切好的肉块
+    // 检查是否有切好的肉块
     hasSlicedMeat(): boolean {
         return this._slicedMeatCount > 0;
     }
     
-    // 🆕 调试方法：显示堆叠状态
+    // 调试方法：显示堆叠状态
     debugSlicedMeatStack() {
         console.log("=== 切好肉块堆叠状态 ===");
         console.log("总数:", this._slicedMeatCount);
@@ -266,7 +313,7 @@ export class MeatDeliverySystem extends Component {
         console.log("=======================");
     }
     
-    // 🆕 清空所有切好的肉块（调试用）
+    // 清空所有切好的肉块（调试用）
     clearSlicedMeats() {
         this._slicedMeats.forEach(meat => {
             if (meat && meat.isValid) {
@@ -276,5 +323,11 @@ export class MeatDeliverySystem extends Component {
         this._slicedMeats = [];
         this._slicedMeatCount = 0;
         console.log("🧹 清空所有切好的肉块");
+    }
+    
+    // 重置系统（调试用）
+    resetSystem() {
+        this.clearSlicedMeats();
+        console.log("🔄 系统已重置");
     }
 }
