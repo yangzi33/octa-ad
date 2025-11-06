@@ -29,6 +29,9 @@ export class MeatDeliverySystem extends Component {
     
     @property
     baseHeight: number = 0.0; // 🆕 基础高度，用于调整堆叠起始位置
+
+    @property
+    numSlicedPerMeat: number = 3;
     
     @property(Prefab)
     slicedMeatPrefab: Prefab = null;
@@ -143,14 +146,100 @@ export class MeatDeliverySystem extends Component {
         // 销毁原始肉块
         meatNode.destroy();
         
-        // 创建切好的肉块并飞到桌子
-        this.createAndFlySlicedMeatToTable(() => {
+        // 🆕 创建多个切好的肉块并飞到桌子
+        this.createMultipleSlicedMeats(() => {
             if (onComplete) {
                 onComplete();
             }
         });
+    }    
+
+    createMultipleSlicedMeats(onComplete?: Function) {
+        if (!this.slicedMeatPrefab || !this.disassembleNode || !this.tableNode) {
+            console.error("❌ 创建切好的肉块失败：缺少必要节点或预制体");
+            if (onComplete) onComplete();
+            return;
+        }
+        
+        console.log(`🔪 开始创建 ${this.numSlicedPerMeat} 个切片肉块`);
+        
+        let completedCount = 0;
+        
+        // 创建指定数量的切片肉块
+        for (let i = 0; i < this.numSlicedPerMeat; i++) {
+            this.createAndFlySingleSlicedMeat(() => {
+                completedCount++;
+                
+                // 当所有切片肉块都创建完成后调用回调
+                if (completedCount >= this.numSlicedPerMeat && onComplete) {
+                    onComplete();
+                }
+            });
+        }
     }
-    
+
+    createAndFlySingleSlicedMeat(onComplete?: Function) {
+        // 创建切好的肉块实例
+        const slicedMeat = instantiate(this.slicedMeatPrefab);
+        slicedMeat.parent = this.node.scene;
+        slicedMeat.setWorldPosition(this.disassembleNode.worldPosition);
+        
+        console.log("🔪 单个切好的肉块已创建，开始飞向桌子");
+        
+        // 使用数组长度作为索引
+        const stackIndex = this._slicedMeats.length;
+        const stackPosition = this.calculateSlicedMeatStackPosition(stackIndex);
+        
+        console.log(`📊 堆叠索引: ${stackIndex}, 堆叠位置:`, stackPosition);
+        
+        // 将本地堆叠位置转换为世界坐标
+        const targetWorldPos = this.convertLocalToWorld(this.tableNode, stackPosition);
+        
+        const startPos = slicedMeat.worldPosition.clone();
+        
+        // 🆕 添加随机偏移，使肉块堆叠更自然
+        const randomOffset = new Vec3(
+            (Math.random() - 0.5) * 0.3, // X轴随机偏移
+            0,
+            (Math.random() - 0.5) * 0.3  // Z轴随机偏移
+        );
+        
+        const finalStackPosition = stackPosition.clone().add(randomOffset);
+        const finalTargetWorldPos = targetWorldPos.clone().add(randomOffset);
+        
+        // 抛物线飞到桌子
+        tween(slicedMeat)
+            .to(0.8, {
+                position: finalTargetWorldPos
+            }, {
+                onUpdate: (target: Node, ratio: number) => {
+                    const currentPos = this.calculateParabolaPosition(startPos, finalTargetWorldPos, ratio);
+                    target.setWorldPosition(currentPos);
+                    target.setRotationFromEuler(0, ratio * 360, 0);
+                }
+            })
+            .call(() => {
+                console.log("✅ 切好的肉块到达桌子");
+                
+                // 设置父节点为桌子
+                slicedMeat.parent = this.tableNode;
+                slicedMeat.setPosition(finalStackPosition);
+                
+                this._slicedMeats.push(slicedMeat);
+                this._slicedMeatCount = this._slicedMeats.length;
+                
+                console.log(`🔪 切好的肉块堆叠完成，总数: ${this._slicedMeatCount}`);
+                
+                // 立即验证堆叠位置
+                this.validateStackPositions();
+                
+                if (onComplete) {
+                    onComplete();
+                }
+            })
+            .start();
+    }
+
     // 创建切好的肉块并飞到桌子
     createAndFlySlicedMeatToTable(onComplete?: Function) {
         if (!this.slicedMeatPrefab || !this.disassembleNode || !this.tableNode) {
