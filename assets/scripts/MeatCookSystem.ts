@@ -22,7 +22,7 @@ export class MeatCookSystem extends Component {
     cookedMeatHeight: number = 0.5; // 每个熟肉块的高度
     
     @property
-    flightHeight: number = 2.0; // 抛物线飞行高度
+    flightHeight: number = 3.0; // 抛物线飞行高度
     
     private _slicedMeatsOnCook: Node[] = []; // 在烹饪节点上的切片肉
     private _cookedMeats: Node[] = []; // 在熟肉桌子上的熟肉
@@ -118,7 +118,7 @@ export class MeatCookSystem extends Component {
         this._currentTransferIndex++;
     }
     
-    // 将切片肉移动到烹饪节点
+    // 将切片肉移动到烹饪节点 - 修复从玩家堆叠位置飞到cookNode
     moveSlicedMeatToCook(slicedMeat: Node, index: number, onComplete?: Function) {
         if (!this.cookNode) {
             if (onComplete) onComplete();
@@ -131,26 +131,40 @@ export class MeatCookSystem extends Component {
         // 将本地堆叠位置转换为世界坐标
         const targetWorldPos = this.convertLocalToWorld(this.cookNode, stackPosition);
         
+        // 🆕 修复：确保获取切片肉在玩家身上的世界坐标
         const startPos = slicedMeat.worldPosition.clone();
         
-        // 抛物线飞到烹饪节点
+        console.log(`🎯 切片肉抛物线飞行: 从玩家位置 ${startPos} 到烹饪节点 ${targetWorldPos}`);
+        
+        // 🆕 确保切片肉在场景中（从玩家身上分离）
+        slicedMeat.parent = this.node.scene;
+        
+        // 🆕 抛物线飞到烹饪节点
         tween(slicedMeat)
-            .to(0.5, {
+            .to(1.0, {
                 position: targetWorldPos
             }, {
                 onUpdate: (target: Node, ratio: number) => {
+                    // 🆕 使用抛物线位置计算
                     const currentPos = this.calculateParabolaPosition(startPos, targetWorldPos, ratio);
                     target.setWorldPosition(currentPos);
+                    
+                    // 🆕 添加旋转效果，让飞行更自然
+                    target.setRotationFromEuler(0, ratio * 180, ratio * 90);
                 }
             })
             .call(() => {
+                console.log("✅ 切片肉到达烹饪节点");
+                
                 // 设置父节点为烹饪节点
                 slicedMeat.parent = this.cookNode;
                 slicedMeat.setPosition(stackPosition);
+                // 🆕 重置旋转
+                slicedMeat.setRotationFromEuler(0, 0, 0);
                 
                 this._slicedMeatsOnCook.push(slicedMeat);
                 
-                console.log(`✅ 切片肉到达烹饪节点，当前数量: ${this._slicedMeatsOnCook.length}`);
+                console.log(`🍳 切片肉堆叠完成，当前数量: ${this._slicedMeatsOnCook.length}`);
                 
                 if (onComplete) {
                     onComplete();
@@ -224,15 +238,17 @@ export class MeatCookSystem extends Component {
         
         const startPos = cookedMeat.worldPosition.clone();
         
+        console.log(`🎯 熟肉抛物线飞行: 从 ${startPos} 到 ${targetWorldPos}`);
+        
         // 抛物线飞到熟肉桌子
         tween(cookedMeat)
-            .to(0.8, {
+            .to(1.0, {
                 position: targetWorldPos
             }, {
                 onUpdate: (target: Node, ratio: number) => {
                     const currentPos = this.calculateParabolaPosition(startPos, targetWorldPos, ratio);
                     target.setWorldPosition(currentPos);
-                    target.setRotationFromEuler(0, ratio * 360, 0);
+                    target.setRotationFromEuler(0, ratio * 360, ratio * 180);
                 }
             })
             .call(() => {
@@ -241,6 +257,8 @@ export class MeatCookSystem extends Component {
                 // 设置父节点为熟肉桌子
                 cookedMeat.parent = this.cookedTableNode;
                 cookedMeat.setPosition(stackPosition);
+                // 🆕 重置旋转
+                cookedMeat.setRotationFromEuler(0, 0, 0);
                 
                 this._cookedMeats.push(cookedMeat);
                 this._cookedMeatCount++;
@@ -280,6 +298,7 @@ export class MeatCookSystem extends Component {
         const current = new Vec3();
         Vec3.lerp(current, start, end, ratio);
         
+        // 🆕 使用明显的抛物线公式
         const height = Math.sin(ratio * Math.PI) * this.flightHeight;
         current.y += height;
         

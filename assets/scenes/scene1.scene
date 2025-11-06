@@ -1952,7 +1952,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "6d87996d-49e5-46ba-8397-5d8ba487e473@f9941",
+      "__uuid__": "54dcf095-fcfe-4731-af7f-426683d50b48@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -2061,7 +2061,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "6d87996d-49e5-46ba-8397-5d8ba487e473@f9941",
+      "__uuid__": "9e5c32d6-17d3-4c24-8e93-15535096fa58@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -7596,7 +7596,7 @@
       "__type__": "cc.Vec3",
       "x": -6.896999835968018,
       "y": 0.11100000143051147,
-      "z": 7.001999855041504
+      "z": 6.27400016784668
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -7607,9 +7607,9 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 0.2,
+      "x": 0.096,
       "y": 1,
-      "z": 0.2
+      "z": 0.096
     },
     "_mobility": 0,
     "_layer": 1073741824,
@@ -7780,9 +7780,9 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -6.896999835968018,
-      "y": 0.11100000143051147,
-      "z": 10.050000190734863
+      "x": -9.368,
+      "y": 0.111,
+      "z": 8.603
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -7793,9 +7793,9 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 0.2,
+      "x": 0.093,
       "y": 1,
-      "z": 0.2
+      "z": 0.094
     },
     "_mobility": 0,
     "_layer": 1073741824,
@@ -7935,13 +7935,13 @@
     "cookedTableNode": {
       "__id__": 437
     },
-    "transferRate": 1,
+    "transferRate": 5,
     "cookTime": 3,
     "cookedMeatPrefab": {
       "__uuid__": "f695b07c-77d5-4463-8691-df771bd4daf5",
       "__expectedType__": "cc.Prefab"
     },
-    "cookedMeatHeight": 0.5,
+    "cookedMeatHeight": 0.1,
     "flightHeight": 2,
     "_id": "5d9gTWJ4dEEL1WDOwY8cbj"
   },
