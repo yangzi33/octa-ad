@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, ITriggerEvent } from 'cc';
+import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, Quat, ITriggerEvent, tween, v3, Prefab, instantiate } from 'cc';
 import { Joystick } from './Joystick';
 import { Meat } from './Meat';
 const { ccclass, property } = _decorator;
@@ -36,11 +36,16 @@ export class PlayerController extends Component {
     private _targetRotation: Quat = new Quat();
     private _targetEulerY: number = 0;
 
+    private _slicedPickupZone: Node = null;
+    private _isInSlicedPickupZone: boolean = false;
+
+    private _slicedMeats: Node[] = [];
+    private _slicedMeatCount: number = 0;
+
+    // 🆕 烹饪相关变量 - 简化版本
     private _cookingZone: Node = null;
     private _isInCookingZone: boolean = false;
-
-    private _cookedMeats: Node[] = [];
-    private _cookedMeatCount: number = 0;
+    private _cookZoneController: any = null; // 🆕 烹饪区域控制器引用
 
     onLoad() {
         this._targetRotation = this.node.rotation.clone();
@@ -132,6 +137,9 @@ export class PlayerController extends Component {
         
         // 🆕 检查自动交付
         this.checkAutoDelivery(deltaTime);
+        
+        // 🆕 检查烹饪交互
+        this.checkCookingInteraction(deltaTime);
     }
     
     // 🆕 专门的防旋转方法
@@ -217,10 +225,19 @@ export class PlayerController extends Component {
             this._isInDeliveryZone = true;
             console.log("进入交付区域");
         }
+        else if (otherNode.name === 'SlicedPickupZone') {
+            this._slicedPickupZone = otherNode;
+            this._isInSlicedPickupZone = true;
+            console.log("进入切片拾取区域");
+        }
+        // 🆕 烹饪区域检测
         else if (otherNode.name === 'CookingZone') {
             this._cookingZone = otherNode;
             this._isInCookingZone = true;
-            console.log("进入烹饪区域");
+            
+            // 🆕 获取烹饪区域控制器
+            this._cookZoneController = otherNode.getComponent('CookZoneController');
+            console.log("🍳 进入烹饪区域");
         }
         else if (otherNode.name.includes('Meat')) {
             console.log("🥩 碰到肉块，开始收集");
@@ -229,12 +246,12 @@ export class PlayerController extends Component {
     }
         
     // 🆕 触发器停留事件
-    onTriggerStay(event: ICollisionEvent) {
+    onTriggerStay(event: ITriggerEvent) {
         // 持续触发逻辑
     }
     
     // 🆕 触发器离开事件
-    onTriggerExit(event: ICollisionEvent) {
+    onTriggerExit(event: ITriggerEvent) {
         const otherNode = event.otherCollider.node;
         
         if (otherNode.name === 'DeliveryZone') {
@@ -243,21 +260,43 @@ export class PlayerController extends Component {
             this._deliveryTimer = null;
             console.log("离开交付区域");
         }
+        else if (otherNode.name === 'SlicedPickupZone') {
+            this._isInSlicedPickupZone = false;
+            this._slicedPickupZone = null;
+            console.log("离开切片拾取区域");
+        }
+        // 🆕 离开烹饪区域
         else if (otherNode.name === 'CookingZone') {
             this._isInCookingZone = false;
             this._cookingZone = null;
-            console.log("离开烹饪区域");
+            this._cookZoneController = null;
+            console.log("🍳 离开烹饪区域");
         }
     }
     
     // 🆕 检查烹饪交互
     checkCookingInteraction(deltaTime: number) {
-        if (this._isInCookingZone && this.hasMeat()) {
-            // 烹饪逻辑
+        if (this._isInCookingZone && this._cookZoneController) {
+            // 🆕 检查是否有切片肉可以交给烹饪系统
+            if (this._slicedMeatCount > 0) {
+                const slicedMeat = this.takeSlicedMeat();
+                if (slicedMeat) {
+                    console.log("🍳 将切片肉交给烹饪系统");
+                    this._cookZoneController.addSlicedMeat(slicedMeat);
+                }
+            }
+            
+            // 🆕 检查烹饪系统是否有熟肉可以获取
+            if (this._cookZoneController.hasCookedMeat()) {
+                const cookedMeat = this._cookZoneController.takeCookedMeat();
+                if (cookedMeat) {
+                    console.log("🍖 从烹饪系统获取熟肉");
+                    this.obtainCookedMeat(cookedMeat);
+                }
+            }
         }
     }
     
-
     // 以下保持原有方法不变...
     updateDirection(joystickDir: Vec2) {
         const targetAngleRad = Math.atan2(joystickDir.x, -joystickDir.y);
@@ -475,13 +514,13 @@ export class PlayerController extends Component {
         if (!cookedMeat) return;
         
         cookedMeat.parent = this.node;
-        const stackPosition = this.calculateCookedMeatStackPosition(this._cookedMeatCount);
+        const stackPosition = this.calculateCookedMeatStackPosition(this._slicedMeatCount);
         cookedMeat.setPosition(stackPosition);
         
-        this._cookedMeats.push(cookedMeat);
-        this._cookedMeatCount++;
+        this._slicedMeats.push(cookedMeat);
+        this._slicedMeatCount++;
         
-        console.log(`🍖 获得煮好的肉块，总数: ${this._cookedMeatCount}`);
+        console.log(`🍖 获得煮好的肉块，总数: ${this._slicedMeatCount}`);
     }
 
     calculateCookedMeatStackPosition(index: number): Vec3 {
@@ -492,33 +531,61 @@ export class PlayerController extends Component {
     updateAllMeatPositions() {
         this.updateMeatPositions();
         
-        this._cookedMeats.forEach((meat, index) => {
+        this._slicedMeats.forEach((meat, index) => {
             const targetPos = this.calculateCookedMeatStackPosition(index);
             meat.setPosition(targetPos);
         });
     }
 
     hasCookedMeat(): boolean {
-        return this._cookedMeatCount > 0;
+        return this._slicedMeatCount > 0;
     }
 
     getCookedMeatCount(): number {
-        return this._cookedMeatCount;
+        return this._slicedMeatCount;
     }
 
     deliverOneCookedMeat(): Node | null {
-        if (this._cookedMeatCount === 0) return null;
+        if (this._slicedMeatCount === 0) return null;
         
-        const lastCookedMeat = this._cookedMeats.pop();
+        const lastCookedMeat = this._slicedMeats.pop();
         if (!lastCookedMeat || !lastCookedMeat.isValid) {
             return null;
         }
         
-        this._cookedMeatCount = this._cookedMeats.length;
+        this._slicedMeatCount = this._slicedMeats.length;
         lastCookedMeat.parent = null;
         this.updateAllMeatPositions();
         
-        console.log(`📦 交付1块煮好肉块，剩余 ${this._cookedMeatCount} 块`);
+        console.log(`📦 交付1块煮好肉块，剩余 ${this._slicedMeatCount} 块`);
         return lastCookedMeat;
+    }
+
+    // 🆕 获取切片肉数量
+    getSlicedMeatCount(): number {
+        return this._slicedMeatCount;
+    }
+    
+    // 🆕 获取切片肉
+    takeSlicedMeat(): Node | null {
+        if (this._slicedMeatCount === 0) {
+            console.log("⚠️ 没有切片肉可获取");
+            return null;
+        }
+        
+        const slicedMeat = this._slicedMeats.pop();
+        this._slicedMeatCount--;
+        
+        if (slicedMeat) {
+            // 从玩家身上移除
+            slicedMeat.parent = null;
+            
+            // 更新剩余切片肉的位置
+            this.updateAllMeatPositions();
+            
+            console.log(`📤 拿走切片肉，剩余: ${this._slicedMeatCount}`);
+        }
+        
+        return slicedMeat;
     }
 }

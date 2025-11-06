@@ -7,21 +7,25 @@ export class CookZoneController extends Component {
     cookNode: Node = null; // 烹饪节点，用于放置切片肉
     
     @property(Node)
-    playerNode: Node = null; // 玩家节点
+    cookedMeatSpawnNode: Node = null; // 熟肉生成节点
     
     @property
     cookTime: number = 3.0; // 烹饪时间
+    
+    @property
+    cookInterval: number = 1.0; // 烹饪间隔时间
     
     @property(Prefab)
     cookedMeatPrefab: Prefab = null; // 烹饪好的肉预制体
     
     @property
-    cookInterval: number = 1.0; // 烹饪间隔时间
+    cookedMeatHeight: number = 0.5; // 每个熟肉块的高度
     
     private _slicedMeatsOnCook: Node[] = []; // 在烹饪节点上的切片肉
-    private _isPlayerInZone: boolean = false;
+    private _cookedMeats: Node[] = []; // 在熟肉生成节点上的熟肉
+    private _cookedMeatCount: number = 0;
+    private _isCooking: boolean = false;
     private _cookingTimer: number = 0;
-    private _playerController: any = null;
 
     start() {
         // 添加碰撞检测
@@ -30,15 +34,10 @@ export class CookZoneController extends Component {
             collider.on('onTriggerEnter', this.onTriggerEnter, this);
             collider.on('onTriggerExit', this.onTriggerExit, this);
         }
-        
-        // 获取玩家控制器
-        if (this.playerNode) {
-            this._playerController = this.playerNode.getComponent('PlayerController');
-        }
     }
     
     update(deltaTime: number) {
-        if (this._isPlayerInZone && this._playerController) {
+        if (this._isCooking) {
             this._cookingTimer += deltaTime;
             
             if (this._cookingTimer >= this.cookInterval) {
@@ -52,9 +51,9 @@ export class CookZoneController extends Component {
         const otherNode = event.otherCollider.node;
         
         // 检测玩家进入烹饪区域
-        if (otherNode === this.playerNode) {
+        if (otherNode.name.includes('Player')) {
             console.log("👨‍🍳 玩家进入烹饪区域");
-            this._isPlayerInZone = true;
+            this._isCooking = true;
             this._cookingTimer = 0;
         }
     }
@@ -62,35 +61,21 @@ export class CookZoneController extends Component {
     onTriggerExit(event: ITriggerEvent) {
         const otherNode = event.otherCollider.node;
         
-        if (otherNode === this.playerNode) {
+        if (otherNode.name.includes('Player')) {
             console.log("👨‍🍳 玩家离开烹饪区域");
-            this._isPlayerInZone = false;
+            this._isCooking = false;
             this._cookingTimer = 0;
         }
     }
     
-    // 处理烹饪逻辑
-    processCooking() {
-        if (!this._playerController) {
-            console.error("❌ 找不到PlayerController组件");
+    // 🆕 添加切片肉到烹饪系统
+    addSlicedMeat(slicedMeat: Node) {
+        if (!this.cookNode) {
+            console.error("❌ 缺少烹饪节点");
             return;
         }
         
-        // 检查玩家是否有切片肉
-        const slicedMeatCount = this._playerController.getSlicedMeatCount();
-        if (slicedMeatCount === 0) {
-            console.log("⚠️ 玩家没有切片肉可以烹饪");
-            return;
-        }
-        
-        console.log(`🍳 开始烹饪过程，玩家有 ${slicedMeatCount} 块切片肉`);
-        
-        // 从玩家身上获取一块切片肉
-        const slicedMeat = this._playerController.takeSlicedMeat();
-        if (!slicedMeat) {
-            console.log("❌ 无法获取切片肉");
-            return;
-        }
+        console.log("🔪 添加切片肉到烹饪系统");
         
         // 将切片肉移动到烹饪节点
         this.moveSlicedMeatToCook(slicedMeat, () => {
@@ -101,11 +86,6 @@ export class CookZoneController extends Component {
     
     // 将切片肉移动到烹饪节点
     moveSlicedMeatToCook(slicedMeat: Node, onComplete?: Function) {
-        if (!this.cookNode) {
-            if (onComplete) onComplete();
-            return;
-        }
-        
         // 计算堆叠位置
         const stackIndex = this._slicedMeatsOnCook.length;
         const stackPosition = this.calculateCookStackPosition(stackIndex);
@@ -141,6 +121,26 @@ export class CookZoneController extends Component {
             .start();
     }
     
+    // 处理烹饪逻辑
+    processCooking() {
+        // 检查是否有切片肉可以烹饪
+        if (this._slicedMeatsOnCook.length === 0) {
+            console.log("⚠️ 没有切片肉可以烹饪");
+            return;
+        }
+        
+        // 获取第一个切片肉进行烹饪
+        const slicedMeat = this._slicedMeatsOnCook[0];
+        if (!slicedMeat || !slicedMeat.isValid) {
+            return;
+        }
+        
+        console.log("🍳 开始烹饪切片肉");
+        
+        // 开始烹饪计时
+        this.startCooking(slicedMeat);
+    }
+    
     // 开始烹饪
     startCooking(slicedMeat: Node) {
         console.log(`⏲️ 开始烹饪，需要 ${this.cookTime} 秒`);
@@ -165,66 +165,60 @@ export class CookZoneController extends Component {
             slicedMeat.destroy();
         }
         
-        // 生成熟肉并飞向玩家
+        // 生成熟肉
         this.createCookedMeat();
         
         // 更新剩余切片肉的位置
         this.updateSlicedMeatPositions();
     }
     
-    // 创建熟肉并飞向玩家
+    // 创建熟肉
     createCookedMeat() {
-        if (!this.cookedMeatPrefab || !this.playerNode || !this._playerController) {
-            console.error("❌ 创建熟肉失败：缺少必要组件");
+        if (!this.cookedMeatPrefab) {
+            console.error("❌ 熟肉预制体未设置");
             return;
         }
         
         // 创建熟肉实例
         const cookedMeat = instantiate(this.cookedMeatPrefab);
-        cookedMeat.parent = this.node.scene;
         
-        // 设置熟肉在烹饪节点的位置
-        if (this.cookNode) {
-            cookedMeat.setWorldPosition(this.cookNode.worldPosition);
+        // 设置熟肉在熟肉生成节点的位置
+        if (this.cookedMeatSpawnNode) {
+            cookedMeat.parent = this.cookedMeatSpawnNode;
+            const stackPosition = this.calculateCookedMeatStackPosition(this._cookedMeatCount);
+            cookedMeat.setPosition(stackPosition);
         } else {
+            cookedMeat.parent = this.node.scene;
             cookedMeat.setWorldPosition(this.node.worldPosition);
         }
         
-        console.log("🍖 熟肉已创建，开始飞向玩家");
+        this._cookedMeats.push(cookedMeat);
+        this._cookedMeatCount++;
         
-        // 飞向玩家
-        this.flyCookedMeatToPlayer(cookedMeat);
+        console.log(`🍖 熟肉创建完成，总数: ${this._cookedMeatCount}`);
     }
     
-    // 熟肉飞向玩家
-    flyCookedMeatToPlayer(cookedMeat: Node) {
-        if (!this.playerNode || !this._playerController) return;
+    // 获取熟肉
+    takeCookedMeat(): Node | null {
+        if (this._cookedMeatCount === 0) {
+            console.log("⚠️ 没有熟肉可获取");
+            return null;
+        }
         
-        // 计算在玩家身上的堆叠位置
-        const cookedMeatCount = this._playerController.getCookedMeatCount();
-        const stackPosition = this._playerController.calculateCookedMeatStackPosition(cookedMeatCount);
-        const targetWorldPos = this.convertLocalToWorld(this.playerNode, stackPosition);
+        const cookedMeat = this._cookedMeats.pop();
+        this._cookedMeatCount--;
         
-        const startPos = cookedMeat.worldPosition.clone();
+        if (cookedMeat) {
+            // 从父节点中移除
+            cookedMeat.parent = null;
+            
+            // 更新剩余熟肉的位置
+            this.updateCookedMeatPositions();
+            
+            console.log(`📤 拿走熟肉，剩余: ${this._cookedMeatCount}`);
+        }
         
-        // 抛物线飞到玩家身上
-        tween(cookedMeat)
-            .to(0.8, {
-                position: targetWorldPos
-            }, {
-                onUpdate: (target: Node, ratio: number) => {
-                    const currentPos = this.calculateParabolaPosition(startPos, targetWorldPos, ratio);
-                    target.setWorldPosition(currentPos);
-                    target.setRotationFromEuler(0, ratio * 360, 0);
-                }
-            })
-            .call(() => {
-                console.log("✅ 熟肉到达玩家身上");
-                
-                // 添加到玩家身上
-                this._playerController.obtainCookedMeat(cookedMeat);
-            })
-            .start();
+        return cookedMeat;
     }
     
     // 计算烹饪节点上的堆叠位置
@@ -232,10 +226,23 @@ export class CookZoneController extends Component {
         return new Vec3(0, index * 0.3, 0); // 每个肉块高度偏移0.3
     }
     
+    // 计算熟肉在生成节点上的堆叠位置
+    calculateCookedMeatStackPosition(index: number): Vec3 {
+        return new Vec3(0, index * this.cookedMeatHeight, 0);
+    }
+    
     // 更新切片肉位置
     updateSlicedMeatPositions() {
         this._slicedMeatsOnCook.forEach((meat, index) => {
             const targetPos = this.calculateCookStackPosition(index);
+            meat.setPosition(targetPos);
+        });
+    }
+    
+    // 更新熟肉位置
+    updateCookedMeatPositions() {
+        this._cookedMeats.forEach((meat, index) => {
+            const targetPos = this.calculateCookedMeatStackPosition(index);
             meat.setPosition(targetPos);
         });
     }
@@ -263,6 +270,16 @@ export class CookZoneController extends Component {
         return this._slicedMeatsOnCook.length;
     }
     
+    // 获取熟肉数量
+    getCookedMeatCount(): number {
+        return this._cookedMeatCount;
+    }
+    
+    // 检查是否有熟肉
+    hasCookedMeat(): boolean {
+        return this._cookedMeatCount > 0;
+    }
+    
     // 清空所有烹饪中的肉块（调试用）
     clearCookingMeats() {
         this._slicedMeatsOnCook.forEach(meat => {
@@ -274,10 +291,23 @@ export class CookZoneController extends Component {
         console.log("🧹 清空所有烹饪中的肉块");
     }
     
+    // 清空所有熟肉（调试用）
+    clearCookedMeats() {
+        this._cookedMeats.forEach(meat => {
+            if (meat && meat.isValid) {
+                meat.destroy();
+            }
+        });
+        this._cookedMeats = [];
+        this._cookedMeatCount = 0;
+        console.log("🧹 清空所有熟肉");
+    }
+    
     // 重置烹饪区域（调试用）
     resetCookZone() {
         this.clearCookingMeats();
-        this._isPlayerInZone = false;
+        this.clearCookedMeats();
+        this._isCooking = false;
         this._cookingTimer = 0;
         console.log("🔄 烹饪区域已重置");
     }
