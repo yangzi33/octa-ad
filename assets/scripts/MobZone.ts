@@ -112,7 +112,6 @@ export class MobZone extends Component {
 
         const mobController = mob.getComponent(MobController);
         if (mobController) {
-            mobController.setSpawnPosition(spawnPos);
             mobController.setMobZone(this);
         }
 
@@ -194,6 +193,21 @@ export class MobZone extends Component {
 
     notifyMobsPlayerEntered(player: Node) {
         console.log(`📢 通知 ${this._mobs.length} 个怪物玩家进入`);
+        
+        // 🆕 创建临时数组，避免在遍历过程中修改原数组
+        const validMobs = [];
+        for (let i = 0; i < this._mobs.length; i++) {
+            const mob = this._mobs[i];
+            // 🆕 检查节点是否有效
+            if (mob && mob.isValid) {
+                validMobs.push(mob);
+            }
+        }
+        
+        // 🆕 更新怪物列表，移除无效节点
+        this._mobs = validMobs;
+        
+        // 🆕 只通知有效的怪物
         for (let i = 0; i < this._mobs.length; i++) {
             const mob = this._mobs[i];
             const mobController = mob.getComponent(MobController);
@@ -206,6 +220,21 @@ export class MobZone extends Component {
 
     notifyMobsPlayerLeft(player: Node) {
         console.log(`📢 通知 ${this._mobs.length} 个怪物玩家离开`);
+        
+        // 🆕 创建临时数组，避免在遍历过程中修改原数组
+        const validMobs = [];
+        for (let i = 0; i < this._mobs.length; i++) {
+            const mob = this._mobs[i];
+            // 🆕 检查节点是否有效
+            if (mob && mob.isValid) {
+                validMobs.push(mob);
+            }
+        }
+        
+        // 🆕 更新怪物列表，移除无效节点
+        this._mobs = validMobs;
+        
+        // 🆕 只通知有效的怪物
         for (let i = 0; i < this._mobs.length; i++) {
             const mob = this._mobs[i];
             const mobController = mob.getComponent(MobController);
@@ -252,6 +281,12 @@ export class MobZone extends Component {
     }
 
     respawnMob(mob: Node) {
+        // 🆕 检查节点是否有效
+        if (!mob || !mob.isValid) {
+            console.warn("⚠️ 尝试重生的怪物节点无效");
+            return;
+        }
+
         const mobController = mob.getComponent(MobController);
         if (mobController) {
             mobController.reset();
@@ -264,16 +299,13 @@ export class MobZone extends Component {
         const randomRotationY = Math.random() * 360;
         mob.setRotationFromEuler(0, randomRotationY, 0);
         
-        if (mobController) {
-            mobController.setSpawnPosition(spawnPos);
-        }
-        
         this._mobs.push(mob);
         console.log("👹 怪物重生");
     }
 
     getMobs(): Node[] {
-        return this._mobs;
+        // 🆕 返回有效的怪物列表
+        return this._mobs.filter(mob => mob && mob.isValid);
     }
 
     getPlayersInZone(): Node[] {

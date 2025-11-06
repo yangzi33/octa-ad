@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Animation, Collider, ICollisionEvent, ITriggerEvent } from 'cc';
+import { _decorator, Component, Node, Animation, Collider, ITriggerEvent } from 'cc';
 import { MobController } from './MobController';
 const { ccclass, property } = _decorator;
 
@@ -48,12 +48,13 @@ export class BattlePlayerController extends Component {
             this.attackDamage = 100;
         }
 
-        // 设置碰撞器
+        // 🆕 设置碰撞器为触发器，这样不会阻挡怪物
         const collider = this.getComponent(Collider);
         if (collider) {
-            collider.on('onCollisionEnter', this.onCollisionEnter, this);
-            collider.on('onCollisionStay', this.onCollisionStay, this);
-            collider.on('onCollisionExit', this.onCollisionExit, this);
+            collider.isTrigger = true;
+            collider.on('onTriggerEnter', this.onTriggerEnter, this);
+            collider.on('onTriggerStay', this.onTriggerStay, this);
+            collider.on('onTriggerExit', this.onTriggerExit, this);
         }
     }
 
@@ -62,34 +63,36 @@ export class BattlePlayerController extends Component {
     }
 
     update(deltaTime: number) {
+        if (this._isDead) return;
+        
         // 更新攻击冷却
         if (this._currentCooldown > 0) {
             this._currentCooldown -= deltaTime;
         }
         
-        // 如果有目标且不在冷却中，自动攻击
+        // 🆕 如果有目标且不在冷却中，自动攻击
         if (this._currentTarget && !this._isAttacking && this._currentCooldown <= 0) {
             this.attack(this._currentTarget);
         }
     }
 
-    // 碰撞进入事件
-    onCollisionEnter(event: ICollisionEvent) {
+    // 🆕 触发器进入事件
+    onTriggerEnter(event: ITriggerEvent) {
         const otherNode = event.otherCollider.node;
         
-        // 检测是否碰撞到怪物
+        // 检测是否接触到怪物
         const mobController = otherNode.getComponent(MobController);
         if (mobController && !mobController.isDead()) {
-            console.log("💥 玩家碰撞到怪物");
+            console.log("💥 玩家接触到怪物");
             this._currentTarget = mobController;
         }
     }
     
-    // 碰撞持续事件
-    onCollisionStay(event: ICollisionEvent) {
+    // 🆕 触发器持续事件
+    onTriggerStay(event: ITriggerEvent) {
         const otherNode = event.otherCollider.node;
         
-        // 持续检测是否碰撞到怪物
+        // 持续检测是否接触到怪物
         const mobController = otherNode.getComponent(MobController);
         if (mobController && !mobController.isDead()) {
             // 如果当前没有目标，设置目标
@@ -99,8 +102,8 @@ export class BattlePlayerController extends Component {
         }
     }
     
-    // 碰撞离开事件
-    onCollisionExit(event: ICollisionEvent) {
+    // 🆕 触发器离开事件
+    onTriggerExit(event: ITriggerEvent) {
         const otherNode = event.otherCollider.node;
         
         // 检测是否离开怪物

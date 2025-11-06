@@ -2310,7 +2310,7 @@
     "attackAnim": "Take 001.animation",
     "dieAnim": "Take 001.animation",
     "attackDamage": 50,
-    "attackCooldown": 1,
+    "attackCooldown": 0.1,
     "_id": "5cNQp/uEFHvJADhpFlNeZA"
   },
   {
@@ -12568,8 +12568,8 @@
       "__uuid__": "c8276616-80b5-435a-8e3f-1e875ebea056",
       "__expectedType__": "cc.Prefab"
     },
-    "mobCount": 5,
-    "respawnTime": 10,
+    "mobCount": 20,
+    "respawnTime": 2,
     "mobContainer": null,
     "_id": "45ROvC2z5DZpI/GZHrIVEj"
   },
