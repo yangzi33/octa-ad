@@ -1,0 +1,184 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "9c7367b9-fb3c-4d59-9b31-d96673c9048b",
+  "files": [],
+  "subMetas": {
+    "fa5b8": {
+      "importer": "gltf-mesh",
+      "uuid": "9c7367b9-fb3c-4d59-9b31-d96673c9048b@fa5b8",
+      "displayName": "",
+      "id": "fa5b8",
+      "name": "mod_city_wall_01B_改.005.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 93
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "333fe": {
+      "importer": "gltf-material",
+      "uuid": "9c7367b9-fb3c-4d59-9b31-d96673c9048b@333fe",
+      "displayName": "",
+      "id": "333fe",
+      "name": "M_WM_Wall_01.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ad38e": {
+      "importer": "gltf-scene",
+      "uuid": "9c7367b9-fb3c-4d59-9b31-d96673c9048b@ad38e",
+      "displayName": "",
+      "id": "ad38e",
+      "name": "WM_Wall_01_c.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "9c7367b9-fb3c-4d59-9b31-d96673c9048b@fa5b8"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "9c7367b9-fb3c-4d59-9b31-d96673c9048b@333fe"
+      ],
+      "scenes": [
+        "9c7367b9-fb3c-4d59-9b31-d96673c9048b@ad38e"
+      ]
+    },
+    "materials": {
+      "9c7367b9-fb3c-4d59-9b31-d96673c9048b@333fe": {
+        "__type__": "cc.Material",
+        "_name": "",
+        "_objFlags": 0,
+        "__editorExtras__": {},
+        "_native": "",
+        "_effectAsset": {
+          "__uuid__": "f648964e-8d32-41fc-9ac9-7a1e714dd17b",
+          "__expectedType__": "cc.EffectAsset"
+        },
+        "_techIdx": 0,
+        "_defines": [
+          {
+            "USE_INSTANCING": true,
+            "DCC_APP_NAME": 2,
+            "HAS_EXPORTED_METALLIC": true
+          },
+          {},
+          {},
+          {}
+        ],
+        "_states": [
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          }
+        ],
+        "_props": [
+          {
+            "mainColor": {
+              "__type__": "cc.Color",
+              "r": 231,
+              "g": 231,
+              "b": 231,
+              "a": 255
+            },
+            "emissive": {
+              "__type__": "cc.Color",
+              "r": 255,
+              "g": 255,
+              "b": 255,
+              "a": 255
+            },
+            "emissiveScale": 0,
+            "shininessExponent": 25,
+            "specularFactor": 0.25,
+            "transparencyFactor": 0
+          },
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    "tangents": 2
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "2e060f49-896a-453a-904b-b35da3b749f9",
+  "files": [
+    "__original-animation-0.bin"
+  ],
+  "subMetas": {
+    "609cd": {
+      "importer": "gltf-mesh",
+      "uuid": "2e060f49-896a-453a-904b-b35da3b749f9@609cd",
+      "displayName": "",
+      "id": "609cd",
+      "name": "WM_Protagonist_01.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 3011
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "2e060f49-896a-453a-904b-b35da3b749f9@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 19
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "583b7": {
+      "importer": "texture",
+      "uuid": "2e060f49-896a-453a-904b-b35da3b749f9@583b7",
+      "displayName": "",
+      "id": "583b7",
+      "name": "file5.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "370f159c-4037-4122-ae3e-7fe5dca1636b"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0d8d9": {
+      "importer": "gltf-scene",
+      "uuid": "2e060f49-896a-453a-904b-b35da3b749f9@0d8d9",
+      "displayName": "",
+      "id": "0d8d9",
+      "name": "zhujue@rig.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "file5",
+        "remap": "370f159c-4037-4122-ae3e-7fe5dca1636b",
+        "uri": "db://assets/textures/prevAd/model/Character/Tex/WM_Protagonist_01_D.jpg"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "2e060f49-896a-453a-904b-b35da3b749f9@609cd"
+      ],
+      "skeletons": [
+        "2e060f49-896a-453a-904b-b35da3b749f9@438fe"
+      ],
+      "textures": [
+        "2e060f49-896a-453a-904b-b35da3b749f9@583b7"
+      ],
+      "materials": [
+        "f8920f0f-5255-4f75-a4f1-2f93653a1bef"
+      ],
+      "scenes": [
+        "2e060f49-896a-453a-904b-b35da3b749f9@0d8d9"
+      ]
+    },
+    "animationImportSettings": [
+      {
+        "name": "Take 001",
+        "duration": 0.8333333134651184,
+        "fps": 30,
+        "splits": []
+      }
+    ],
+    "tangents": 1,
+    "meshCompress": {
+      "enable": true,
+      "compress": true,
+      "quantize": true
+    },
+    "meshSimplify": {
+      "enable": true,
+      "targetRatio": 0.92
+    },
+    "materials": {
+      "2e060f49-896a-453a-904b-b35da3b749f9@62b33": {
+        "__type__": "cc.Material",
+        "_name": "",
+        "_objFlags": 0,
+        "__editorExtras__": {},
+        "_native": "",
+        "_effectAsset": {
+          "__uuid__": "e643cf22-8ba2-4e11-ad93-dff7503664f3",
+          "__expectedType__": "cc.EffectAsset"
+        },
+        "_techIdx": 0,
+        "_defines": [
+          {
+            "USE_OUTLINE_PASS": true
+          },
+          {
+            "USE_ALBEDO_MAP": true
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ],
+        "_states": [
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          }
+        ],
+        "_props": [
+          {
+            "lineWidth": 20
+          },
+          {
+            "mainTexture": {
+              "__uuid__": "370f159c-4037-4122-ae3e-7fe5dca1636b@6c48a",
+              "__expectedType__": "cc.Texture2D"
+            }
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    "mountAllAnimationsOnPrefab": false,
+    "dumpMaterials": true,
+    "materialDumpDir": "db://assets/model/Character/Materials_zhujue@rig"
+  }
+}

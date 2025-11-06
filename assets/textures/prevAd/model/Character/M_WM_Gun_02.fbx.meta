@@ -1,0 +1,227 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "5ca0399d-41a8-4437-839f-2a8eac52a080",
+  "files": [],
+  "subMetas": {
+    "468f9": {
+      "importer": "gltf-mesh",
+      "uuid": "5ca0399d-41a8-4437-839f-2a8eac52a080@468f9",
+      "displayName": "",
+      "id": "468f9",
+      "name": "sfg_mesh.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 976
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "7e3eb": {
+      "importer": "gltf-material",
+      "uuid": "5ca0399d-41a8-4437-839f-2a8eac52a080@7e3eb",
+      "displayName": "",
+      "id": "7e3eb",
+      "name": " M_WM_Gun_02.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "1884b": {
+      "importer": "gltf-scene",
+      "uuid": "5ca0399d-41a8-4437-839f-2a8eac52a080@1884b",
+      "displayName": "",
+      "id": "1884b",
+      "name": "M_WM_Gun_02.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "5ca0399d-41a8-4437-839f-2a8eac52a080@468f9"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "5ca0399d-41a8-4437-839f-2a8eac52a080@7e3eb"
+      ],
+      "scenes": [
+        "5ca0399d-41a8-4437-839f-2a8eac52a080@1884b"
+      ]
+    },
+    "materials": {
+      "5ca0399d-41a8-4437-839f-2a8eac52a080@7e3eb": {
+        "__type__": "cc.Material",
+        "_name": "",
+        "_objFlags": 0,
+        "__editorExtras__": {},
+        "_native": "",
+        "_effectAsset": {
+          "__uuid__": "e643cf22-8ba2-4e11-ad93-dff7503664f3",
+          "__expectedType__": "cc.EffectAsset"
+        },
+        "_techIdx": 0,
+        "_defines": [
+          {
+            "USE_OUTLINE_PASS": true,
+            "USE_INSTANCING": true
+          },
+          {
+            "USE_INSTANCING": true,
+            "USE_ALBEDO_MAP": true
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ],
+        "_states": [
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          },
+          {
+            "rasterizerState": {},
+            "depthStencilState": {},
+            "blendState": {
+              "targets": [
+                {}
+              ]
+            }
+          }
+        ],
+        "_props": [
+          {
+            "lineWidth": 20
+          },
+          {
+            "mainTexture": {
+              "__uuid__": "4e111624-501b-4753-993e-616a42ed7b6e@6c48a",
+              "__expectedType__": "cc.Texture2D"
+            }
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    "tangents": 1,
+    "meshSimplify": {
+      "enable": true,
+      "targetRatio": 0.12
+    },
+    "meshCompress": {
+      "enable": true,
+      "quantize": true,
+      "compress": true
+    }
+  }
+}

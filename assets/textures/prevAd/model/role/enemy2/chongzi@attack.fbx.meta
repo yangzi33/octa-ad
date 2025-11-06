@@ -1,0 +1,136 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "a9f233bc-0a03-49ae-9839-0f4bf3433ce9",
+  "files": [
+    "__original-animation-0.bin"
+  ],
+  "subMetas": {
+    "989ed": {
+      "importer": "gltf-animation",
+      "uuid": "a9f233bc-0a03-49ae-9839-0f4bf3433ce9@989ed",
+      "displayName": "",
+      "id": "989ed",
+      "name": "attack.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 1,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.8333333134651184
+        },
+        "events": [
+          {
+            "frame": 0.2,
+            "func": "",
+            "params": []
+          },
+          {
+            "frame": 0.2,
+            "func": "enemyAttack",
+            "params": []
+          },
+          {
+            "frame": 0.5,
+            "func": "",
+            "params": []
+          },
+          {
+            "frame": 0.5,
+            "func": "enemyAttack",
+            "params": []
+          },
+          {
+            "frame": 0.8333333333333334,
+            "func": "",
+            "params": []
+          },
+          {
+            "frame": 0.8333333333333334,
+            "func": "enemyAttackEnd",
+            "params": []
+          }
+        ],
+        "embeddedPlayers": [],
+        "editorExtras": {
+          "embeddedPlayerGroups": []
+        },
+        "speed": 1,
+        "auxiliaryCurves": {}
+      },
+      "ver": "1.0.18",
+      "imported": true,
+      "files": [
+        ".bin"
+      ],
+      "subMetas": {}
+    },
+    "dd8a6": {
+      "importer": "gltf-scene",
+      "uuid": "a9f233bc-0a03-49ae-9839-0f4bf3433ce9@dd8a6",
+      "displayName": "",
+      "id": "dd8a6",
+      "name": "chongzi@attack.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "Take 001",
+        "duration": 0.8333333134651184,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "attack",
+            "from": 0,
+            "to": 0.8333333134651184,
+            "wrapMode": 1,
+            "previousId": "989ed"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [],
+      "skeletons": [],
+      "textures": [],
+      "materials": [],
+      "scenes": [
+        "a9f233bc-0a03-49ae-9839-0f4bf3433ce9@dd8a6"
+      ]
+    }
+  }
+}

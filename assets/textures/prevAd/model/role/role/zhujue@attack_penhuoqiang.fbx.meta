@@ -1,0 +1,99 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "b8ab5816-3a47-4808-833f-6f3b41fec5be",
+  "files": [
+    "__original-animation-0.bin"
+  ],
+  "subMetas": {
+    "18617": {
+      "importer": "gltf-animation",
+      "uuid": "b8ab5816-3a47-4808-833f-6f3b41fec5be@18617",
+      "displayName": "",
+      "id": "18617",
+      "name": "attack_penhuoqiang.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 1
+        },
+        "events": []
+      },
+      "ver": "1.0.18",
+      "imported": true,
+      "files": [
+        ".bin"
+      ],
+      "subMetas": {}
+    },
+    "541cd": {
+      "importer": "gltf-scene",
+      "uuid": "b8ab5816-3a47-4808-833f-6f3b41fec5be@541cd",
+      "displayName": "",
+      "id": "541cd",
+      "name": "zhujue@attack_penhuoqiang.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "Take 001",
+        "duration": 1,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "attack_penhuoqiang",
+            "from": 0,
+            "to": 1,
+            "wrapMode": 2,
+            "previousId": "18617"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [],
+      "skeletons": [],
+      "textures": [],
+      "materials": [],
+      "scenes": [
+        "b8ab5816-3a47-4808-833f-6f3b41fec5be@541cd"
+      ]
+    }
+  }
+}

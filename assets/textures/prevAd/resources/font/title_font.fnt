@@ -1,0 +1,14 @@
+info face="face" size=44
+common lineHeight=44 scaleW=162 scaleH=133 pages=1
+page id=0 file="title_font.png"
+chars count=10
+char id=54 x=0 y=43 width=31 height=44 xoffset=0 yoffset=0 xadvance=31 page=0 chnl=15
+char id=53 x=31 y=88 width=30 height=43 xoffset=0 yoffset=0 xadvance=30 page=0 chnl=15
+char id=52 x=0 y=0 width=33 height=42 xoffset=0 yoffset=0 xadvance=33 page=0 chnl=15
+char id=57 x=34 y=0 width=31 height=44 xoffset=0 yoffset=0 xadvance=31 page=0 chnl=15
+char id=56 x=66 y=0 width=31 height=44 xoffset=0 yoffset=0 xadvance=31 page=0 chnl=15
+char id=49 x=98 y=45 width=29 height=42 xoffset=0 yoffset=0 xadvance=29 page=0 chnl=15
+char id=50 x=130 y=0 width=31 height=43 xoffset=0 yoffset=0 xadvance=31 page=0 chnl=15
+char id=48 x=98 y=0 width=31 height=44 xoffset=0 yoffset=0 xadvance=31 page=0 chnl=15
+char id=51 x=0 y=88 width=30 height=44 xoffset=0 yoffset=0 xadvance=30 page=0 chnl=15
+char id=55 x=130 y=44 width=31 height=42 xoffset=0 yoffset=0 xadvance=31 page=0 chnl=15

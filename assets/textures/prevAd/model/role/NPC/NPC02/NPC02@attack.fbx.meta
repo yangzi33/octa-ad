@@ -1,0 +1,126 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "e187d258-816e-4956-83f7-097df725b5cf",
+  "files": [
+    "__original-animation-0.bin"
+  ],
+  "subMetas": {
+    "53237": {
+      "importer": "gltf-scene",
+      "uuid": "e187d258-816e-4956-83f7-097df725b5cf@53237",
+      "displayName": "",
+      "id": "53237",
+      "name": "NPC02@attack.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "989ed": {
+      "importer": "gltf-animation",
+      "uuid": "e187d258-816e-4956-83f7-097df725b5cf@989ed",
+      "displayName": "",
+      "id": "989ed",
+      "name": "attack.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 1,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.7333333492279053
+        },
+        "events": [
+          {
+            "frame": 0.13333333333333333,
+            "func": "",
+            "params": []
+          },
+          {
+            "frame": 0.13333333333333333,
+            "func": "attack1",
+            "params": []
+          },
+          {
+            "frame": 0.4666666666666667,
+            "func": "",
+            "params": []
+          },
+          {
+            "frame": 0.4666666666666667,
+            "func": "attack2",
+            "params": []
+          }
+        ],
+        "embeddedPlayers": [],
+        "editorExtras": {
+          "embeddedPlayerGroups": []
+        },
+        "speed": 1,
+        "auxiliaryCurves": {}
+      },
+      "ver": "1.0.18",
+      "imported": true,
+      "files": [
+        ".bin"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "Take 001",
+        "duration": 0.7333333492279053,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "attack",
+            "from": 0,
+            "to": 0.7333333492279053,
+            "wrapMode": 1,
+            "previousId": "989ed"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [],
+      "skeletons": [],
+      "textures": [],
+      "materials": [],
+      "scenes": [
+        "e187d258-816e-4956-83f7-097df725b5cf@53237"
+      ]
+    }
+  }
+}
