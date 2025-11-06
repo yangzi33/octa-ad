@@ -10,7 +10,7 @@ export class ObtainZone extends Component {
     meatDeliverySystem: Node = null;
     
     @property(Prefab)
-    cookedMeatPrefab: Prefab = null;
+    slicedMeatPrefab: Prefab = null;
     
     private _playerInZone: boolean = false;
     private _playerNode: Node = null;
@@ -52,7 +52,7 @@ export class ObtainZone extends Component {
     }
     
     continuousObtain(deltaTime: number) {
-        if (!this._playerNode || !this.meatDeliverySystem || !this.cookedMeatPrefab) return;
+        if (!this._playerNode || !this.meatDeliverySystem || !this.slicedMeatPrefab) return;
         
         const playerController = this._playerNode.getComponent('PlayerController') as any;
         const deliverySystem = this.meatDeliverySystem.getComponent('MeatDeliverySystem') as any;
@@ -73,10 +73,10 @@ export class ObtainZone extends Component {
             const slicedMeat = deliverySystem.takeSlicedMeat();
             if (slicedMeat) {
                 // 🆕 创建煮好的肉块
-                const cookedMeat = instantiate(this.cookedMeatPrefab);
+                const slicedMeat = instantiate(this.slicedMeatPrefab);
                 
                 // 🆕 播放飞到玩家背上的动画
-                this.flyToPlayerBack(cookedMeat, playerController);
+                this.flyToPlayerBack(slicedMeat, playerController);
                 
                 console.log("🍖 玩家获得煮好的肉块!");
             }
@@ -86,19 +86,19 @@ export class ObtainZone extends Component {
     }
     
     // 🆕 煮好的肉块飞到玩家背上
-    flyToPlayerBack(cookedMeat: Node, playerController: any) {
-        if (!this._playerNode || !cookedMeat) return;
+    flyToPlayerBack(slicedMeat: Node, playerController: any) {
+        if (!this._playerNode || !slicedMeat) return;
         
         // 设置初始位置在获取区域
-        cookedMeat.setWorldPosition(this.node.worldPosition);
-        cookedMeat.parent = this.node.scene;
+        slicedMeat.setWorldPosition(this.node.worldPosition);
+        slicedMeat.parent = this.node.scene;
         
-        const startPos = cookedMeat.worldPosition.clone();
+        const startPos = slicedMeat.worldPosition.clone();
         const targetPos = this._playerNode.worldPosition.clone();
         
         console.log("✈️ 煮好的肉块飞向玩家");
         
-        tween(cookedMeat)
+        tween(slicedMeat)
             .to(0.6, {
                 position: targetPos
             }, {
@@ -111,7 +111,7 @@ export class ObtainZone extends Component {
                 console.log("✅ 煮好的肉块到达玩家");
                 
                 // 🆕 交给玩家控制器处理堆叠
-                playerController.obtainCookedMeat(cookedMeat);
+                playerController.obtainSlicedMeat(slicedMeat);
             })
             .start();
     }

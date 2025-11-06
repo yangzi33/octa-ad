@@ -450,11 +450,23 @@
     "joystick": {
       "__id__": 15
     },
-    "meatStackOffset": {
+    "meatOffset0": {
       "__type__": "cc.Vec3",
       "x": 0,
       "y": 0.5,
-      "z": 0
+      "z": -0.5
+    },
+    "meatOffset1": {
+      "__type__": "cc.Vec3",
+      "x": -0.3,
+      "y": 0.5,
+      "z": -0.5
+    },
+    "meatOffset2": {
+      "__type__": "cc.Vec3",
+      "x": 0.3,
+      "y": 0.5,
+      "z": -0.5
     },
     "rotationSpeed": 10,
     "meatPerSec": 1,
@@ -7747,7 +7759,7 @@
     "meatDeliverySystem": {
       "__id__": 399
     },
-    "cookedMeatPrefab": {
+    "slicedMeatPrefab": {
       "__uuid__": "b6a24619-4b65-4876-b1db-474c18673ee3",
       "__expectedType__": "cc.Prefab"
     },
@@ -7780,7 +7792,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -9.368,
+      "x": -9.181,
       "y": 0.111,
       "z": 8.603
     },

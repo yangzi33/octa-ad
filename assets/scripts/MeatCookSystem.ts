@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Vec3, tween, v3, Prefab, instantiate, Collider, ITriggerEvent } from 'cc';
+import { PlayerController } from './PlayerController';
 const { ccclass, property } = _decorator;
 
 @ccclass('MeatCookSystem')
@@ -29,7 +30,7 @@ export class MeatCookSystem extends Component {
     private _cookedMeatCount: number = 0;
     private _isPlayerInZone: boolean = false;
     private _transferTimer: number = 0;
-    private _playerController: any = null;
+    private _playerController: PlayerController = null;
     private _currentTransferIndex: number = 0; // 当前正在转移的肉块索引
 
     start() {
@@ -64,7 +65,7 @@ export class MeatCookSystem extends Component {
             this._currentTransferIndex = 0;
             
             // 获取玩家控制器
-            this._playerController = otherNode.getComponent('PlayerController');
+            this._playerController = otherNode.getComponent('PlayerController') as PlayerController;
             
             if (this._playerController) {
                 console.log(`🍳 开始以每秒 ${this.transferRate} 块的速度转移切片肉`);
