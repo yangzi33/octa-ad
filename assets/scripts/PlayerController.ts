@@ -3,6 +3,11 @@ import { Joystick } from './Joystick';
 import { Meat } from './Meat';
 const { ccclass, property } = _decorator;
 
+enum meatType {
+    raw,
+    sliced,
+    cooked,
+}
 @ccclass('PlayerController')
 export class PlayerController extends Component {
     @property
@@ -82,41 +87,93 @@ export class PlayerController extends Component {
         // 更新生肉位置
         this._meats.forEach((meat, index) => {
             if (meat && meat.isValid) {
+                const offset = this.getCurrOffset(meatType.raw);
                 // 生肉总是从offset0开始
                 const targetPos = new Vec3(
-                    this.meatOffset0.x,
-                    this.meatOffset0.y + index * 0.3, // 堆叠效果
-                    this.meatOffset0.z
+                    offset.x,
+                    offset.y + index * 0.3, // 堆叠效果
+                    offset.z
                 );
                 meat.setPosition(targetPos);
+                // console.log("rawOffset: " + offset);
             }
         });
         
         // 更新切片肉位置
         this._slicedMeats.forEach((meat, index) => {
             if (meat && meat.isValid) {
-                // 切片肉在offset1位置堆叠
+                const offset = this.getCurrOffset(meatType.sliced);
                 const targetPos = new Vec3(
-                    this.meatOffset1.x,
-                    this.meatOffset1.y + index * 0.3,
-                    this.meatOffset1.z
+                    offset.x,
+                    offset.y + index * 0.3,
+                    offset.z
                 );
                 meat.setPosition(targetPos);
+                // console.log("slicedOffset: " + offset);
             }
         });
         
         // 更新熟肉位置
         this._cookedMeats.forEach((meat, index) => {
             if (meat && meat.isValid) {
-                // 熟肉在offset2位置堆叠
+                const offset = this.getCurrOffset(meatType.cooked);
                 const targetPos = new Vec3(
-                    this.meatOffset2.x,
-                    this.meatOffset2.y + index * 0.3,
-                    this.meatOffset2.z
+                    offset.x,
+                    offset.y + index * 0.3,
+                    offset.z
                 );
                 meat.setPosition(targetPos);
+                // console.log("cookedOffset: " + offset);
             }
         });
+    }
+
+    getCurrOffset(iMeatType: meatType): Vec3 {
+        const complementTypes: meatType[] = [];
+        if (iMeatType === meatType.raw) {
+            complementTypes.push(meatType.cooked);
+            complementTypes.push(meatType.sliced);
+        }
+        else if (iMeatType === meatType.sliced) {
+            complementTypes.push(meatType.raw);
+            complementTypes.push(meatType.cooked);
+        }
+        else if (iMeatType === meatType.cooked) {
+            complementTypes.push(meatType.raw);
+            complementTypes.push(meatType.sliced);
+        }
+        let cnt = 0;
+        for (let i = 0; i < complementTypes.length; i++) {
+            var cType = complementTypes[i];
+            if (this.getMeatCountByMeatType(cType) > 0) {
+                cnt++;
+            }
+            // console.log("" + cType.toString() + "count: " + this.getMeatCountByMeatType(cType));
+        }
+        if (cnt == 0) {
+            return this.meatOffset0;
+        }
+        else if (cnt == 1) {
+            return this.meatOffset1;
+        }
+        else {
+            return this.meatOffset2;
+        }
+    }
+
+    getMeatCountByMeatType(iMeatType: meatType): number {
+        if (iMeatType === meatType.raw) {
+            return this._meats.length;
+        }
+        else if (iMeatType == meatType.sliced) {
+            return this._slicedMeats.length;
+        }
+        else if (iMeatType == meatType.cooked) {
+            return this._cookedMeats.length;
+        }
+        else {
+            return 0;
+        }
     }
 
     // 收集生肉
