@@ -130,15 +130,15 @@ export class PlayerController extends Component {
 
     getCurrOffset(iMeatType: meatType): Vec3 {
         const complementTypes: meatType[] = [];
-        if (iMeatType === meatType.raw) {
+        if (iMeatType.valueOf() === meatType.raw.valueOf()) {
             complementTypes.push(meatType.cooked);
             complementTypes.push(meatType.sliced);
         }
-        else if (iMeatType === meatType.sliced) {
+        else if (iMeatType.valueOf() === meatType.sliced.valueOf()) {
             complementTypes.push(meatType.raw);
             complementTypes.push(meatType.cooked);
         }
-        else if (iMeatType === meatType.cooked) {
+        else if (iMeatType.valueOf() === meatType.cooked.valueOf()) {
             complementTypes.push(meatType.raw);
             complementTypes.push(meatType.sliced);
         }
