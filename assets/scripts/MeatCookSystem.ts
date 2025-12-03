@@ -10,8 +10,11 @@ export class MeatCookSystem extends Component {
     @property(Node)
     cookedTableNode: Node = null; // 熟肉桌子节点
     
+    @property(Node)
+    cookedMeatDeliverySystem: Node = null; // 🆕 熟肉交付系统，用于管理熟肉
+    
     @property
-    transferRate: number = 1.0; // 每秒转移的肉块数量 (n)
+    transferRate: number = 1.0; // 每秒转移的切片肉数量 (n)
     
     @property
     cookTime: number = 3.0; // 每块肉的烹饪时间 (m秒)
@@ -26,7 +29,7 @@ export class MeatCookSystem extends Component {
     flightHeight: number = 3.0; // 抛物线飞行高度
     
     private _slicedMeatsOnCook: Node[] = []; // 在烹饪节点上的切片肉
-    private _cookedMeats: Node[] = []; // 在熟肉桌子上的熟肉
+    private _cookedMeats: Node[] = []; // 在熟肉桌子上的熟肉（仅用于视觉堆叠）
     private _cookedMeatCount: number = 0;
     private _isPlayerInZone: boolean = false;
     private _transferTimer: number = 0;
@@ -44,9 +47,8 @@ export class MeatCookSystem extends Component {
     
     update(deltaTime: number) {
         if (this._isPlayerInZone && this._playerController) {
+            // 处理切片肉转移到烹饪节点
             this._transferTimer += deltaTime;
-            
-            // 每秒转移指定数量的肉块
             if (this._transferTimer >= 1.0 / this.transferRate) {
                 this.transferOneSlicedMeat();
                 this._transferTimer = 0;
@@ -255,16 +257,28 @@ export class MeatCookSystem extends Component {
             .call(() => {
                 console.log("✅ 熟肉到达熟肉桌子");
                 
-                // 设置父节点为熟肉桌子
+                // 设置父节点为熟肉桌子（视觉堆叠）
                 cookedMeat.parent = this.cookedTableNode;
                 cookedMeat.setPosition(stackPosition);
                 // 🆕 重置旋转
                 cookedMeat.setRotationFromEuler(0, 0, 0);
                 
+                // 添加到本地数组用于视觉管理
                 this._cookedMeats.push(cookedMeat);
                 this._cookedMeatCount++;
                 
-                console.log(`🍖 熟肉堆叠完成，总数: ${this._cookedMeatCount}`);
+                // 🆕 添加到 CookedMeatDeliverySystem 以便 ObtainCookedZone 可以获取
+                if (this.cookedMeatDeliverySystem) {
+                    const deliverySystem = this.cookedMeatDeliverySystem.getComponent('CookedMeatDeliverySystem') as any;
+                    if (deliverySystem) {
+                        deliverySystem.addCookedMeat(cookedMeat);
+                        console.log(`🍖 熟肉已添加到 CookedMeatDeliverySystem，总数: ${this._cookedMeatCount}`);
+                    } else {
+                        console.warn("⚠️ MeatCookSystem: 未找到 CookedMeatDeliverySystem 组件");
+                    }
+                } else {
+                    console.warn("⚠️ MeatCookSystem: 未配置 cookedMeatDeliverySystem");
+                }
             })
             .start();
     }
@@ -321,7 +335,7 @@ export class MeatCookSystem extends Component {
         return this._cookedMeatCount > 0;
     }
     
-    // 获取熟肉
+    // 获取熟肉（保留用于向后兼容，但建议使用 CookedMeatDeliverySystem）
     takeCookedMeat(): Node | null {
         if (this._cookedMeatCount === 0) {
             console.log("⚠️ 没有熟肉可获取");
@@ -344,11 +358,20 @@ export class MeatCookSystem extends Component {
         return cookedMeat;
     }
     
-    // 更新熟肉位置
+    // 更新熟肉位置（过滤掉已被取走的熟肉）
     updateCookedMeatPositions() {
+        // 过滤掉不再属于 cookedTableNode 的熟肉（已被 ObtainCookedZone 取走）
+        this._cookedMeats = this._cookedMeats.filter(meat => {
+            return meat && meat.isValid && meat.parent === this.cookedTableNode;
+        });
+        this._cookedMeatCount = this._cookedMeats.length;
+        
+        // 更新剩余熟肉的位置
         this._cookedMeats.forEach((meat, index) => {
-            const targetPos = this.calculateCookedMeatStackPosition(index);
-            meat.setPosition(targetPos);
+            if (meat && meat.isValid) {
+                const targetPos = this.calculateCookedMeatStackPosition(index);
+                meat.setPosition(targetPos);
+            }
         });
     }
     
