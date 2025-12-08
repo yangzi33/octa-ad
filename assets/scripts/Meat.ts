@@ -56,7 +56,7 @@ export class Meat extends Component {
         const otherNode = event.otherCollider.node;
         
         if (otherNode.name === 'Player') {
-            console.log("🔵 触发器检测到玩家!");
+            // console.log("🔵 触发器检测到玩家!");
             this.startAttraction(otherNode);
         }
     }
@@ -78,7 +78,7 @@ export class Meat extends Component {
             this._rigidBody.enabled = false;
         }
         
-        console.log("🥩 开始吸附到玩家");
+        // console.log("🥩 开始吸附到玩家");
     }
     
     update(deltaTime: number) {
@@ -117,7 +117,7 @@ export class Meat extends Component {
     
     // 🆕 将肉块转移给PlayerController处理
     transferToPlayer() {
-        console.log("🥩 肉块接近玩家，准备转移给PlayerController");
+        // console.log("🥩 肉块接近玩家，准备转移给PlayerController");
         
         // 🆕 获取PlayerController并调用收集方法
         const playerController = this._targetPlayer.getComponent(PlayerController);
@@ -133,7 +133,7 @@ export class Meat extends Component {
                 this._spawner.removeMeat(this.node);
             }
             
-            console.log("🥩 肉块已转移给PlayerController");
+            // console.log("🥩 肉块已转移给PlayerController");
         } else {
             console.error("玩家缺少PlayerController组件!");
         }
