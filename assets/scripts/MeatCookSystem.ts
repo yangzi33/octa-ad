@@ -62,7 +62,6 @@ export class MeatCookSystem extends Component {
         
         // 检测玩家进入烹饪区域
         if (otherNode.name.includes('Player')) {
-            console.log("👨‍🍳 玩家进入烹饪区域");
             this._isPlayerInZone = true;
             this._transferTimer = 0;
             this._currentTransferIndex = 0;
@@ -70,10 +69,8 @@ export class MeatCookSystem extends Component {
             // 获取玩家控制器
             this._playerController = otherNode.getComponent(PlayerController);
             
-            if (this._playerController) {
-                console.log(`🍳 开始以每秒 ${this.transferRate} 块的速度转移切片肉`);
-            } else {
-                console.error("❌ 找不到PlayerController组件");
+            if (!this._playerController) {
+                console.error("MeatCookSystem: PlayerController component not found");
             }
         }
     }
@@ -82,7 +79,6 @@ export class MeatCookSystem extends Component {
         const otherNode = event.otherCollider.node;
         
         if (otherNode.name.includes('Player')) {
-            console.log("👨‍🍳 玩家离开烹饪区域");
             this._isPlayerInZone = false;
             this._transferTimer = 0;
             this._currentTransferIndex = 0;
@@ -93,25 +89,21 @@ export class MeatCookSystem extends Component {
     // 转移一块切片肉到烹饪节点
     transferOneSlicedMeat() {
         if (!this._playerController) {
-            console.error("❌ 找不到PlayerController组件");
+            console.error("MeatCookSystem: PlayerController component not found");
             return;
         }
         
         // 检查玩家是否有切片肉
         const slicedMeatCount = this._playerController.getSlicedMeatCount();
         if (slicedMeatCount === 0) {
-            console.log("⚠️ 玩家没有切片肉可以转移");
             return;
         }
         
         // 从玩家身上获取一块切片肉
         const slicedMeat = this._playerController.takeSlicedMeat();
         if (!slicedMeat) {
-            console.log("❌ 无法获取切片肉");
             return;
         }
-        
-        console.log(`🍳 转移第 ${this._currentTransferIndex + 1} 块切片肉到烹饪节点`);
         
         // 将切片肉移动到烹饪节点
         this.moveSlicedMeatToCook(slicedMeat, this._currentTransferIndex, () => {
@@ -125,11 +117,9 @@ export class MeatCookSystem extends Component {
     // 外部调用：直接添加切片肉到烹饪系统（用于PlayerController手动添加）
     addSlicedMeat(slicedMeat: Node) {
         if (!slicedMeat) {
-            console.warn("⚠️ MeatCookSystem.addSlicedMeat: slicedMeat is null");
+            console.warn("MeatCookSystem.addSlicedMeat: slicedMeat is null");
             return;
         }
-        
-        console.log(`🍳 手动添加切片肉到烹饪节点`);
         
         // 将切片肉移动到烹饪节点
         this.moveSlicedMeatToCook(slicedMeat, this._currentTransferIndex, () => {
@@ -153,43 +143,33 @@ export class MeatCookSystem extends Component {
         // 将本地堆叠位置转换为世界坐标
         const targetWorldPos = this.convertLocalToWorld(this.cookNode, stackPosition);
         
-        // 🆕 修复：确保获取切片肉在玩家身上的世界坐标（在改变parent之前）
+        // 确保获取切片肉在玩家身上的世界坐标（在改变parent之前）
         const startPos = slicedMeat.worldPosition.clone();
         
-        console.log(`🎯 切片肉抛物线飞行: 从玩家位置 ${startPos} 到烹饪节点 ${targetWorldPos}`);
-        
-        // 🆕 确保切片肉在场景中（从玩家身上分离）
+        // 确保切片肉在场景中（从玩家身上分离）
         slicedMeat.parent = this.node.scene;
         
-        // 🆕 修复：立即设置世界位置，确保从玩家位置开始飞行
+        // 立即设置世界位置，确保从玩家位置开始飞行
         slicedMeat.setWorldPosition(startPos);
         
-        // 🆕 抛物线飞到烹饪节点
+        // 抛物线飞到烹饪节点
         tween(slicedMeat)
             .to(1.0, {
                 position: targetWorldPos
             }, {
                 onUpdate: (target: Node, ratio: number) => {
-                    // 🆕 使用抛物线位置计算
                     const currentPos = this.calculateParabolaPosition(startPos, targetWorldPos, ratio);
                     target.setWorldPosition(currentPos);
-                    
-                    // 🆕 添加旋转效果，让飞行更自然
                     target.setRotationFromEuler(0, ratio * 180, ratio * 90);
                 }
             })
             .call(() => {
-                console.log("✅ 切片肉到达烹饪节点");
-                
                 // 设置父节点为烹饪节点
                 slicedMeat.parent = this.cookNode;
                 slicedMeat.setPosition(stackPosition);
-                // 🆕 重置旋转
                 slicedMeat.setRotationFromEuler(0, 0, 0);
                 
                 this._slicedMeatsOnCook.push(slicedMeat);
-                
-                console.log(`🍳 切片肉堆叠完成，当前数量: ${this._slicedMeatsOnCook.length}`);
                 
                 if (onComplete) {
                     onComplete();
@@ -200,11 +180,8 @@ export class MeatCookSystem extends Component {
     
     // 开始烹饪
     startCooking(slicedMeat: Node) {
-        console.log(`⏲️ 开始烹饪，需要 ${this.cookTime} 秒`);
-        
         // 烹饪计时
         this.scheduleOnce(() => {
-            console.log("🔥 烹饪完成");
             this.finishCooking(slicedMeat);
         }, this.cookTime);
     }
@@ -232,7 +209,7 @@ export class MeatCookSystem extends Component {
     // 创建熟肉并飞到熟肉桌子
     createAndFlyCookedMeat() {
         if (!this.cookedMeatPrefab || !this.cookedTableNode) {
-            console.error("❌ 创建熟肉失败：缺少必要组件");
+            console.error("MeatCookSystem: Failed to create cooked meat - missing required components");
             return;
         }
         
@@ -246,8 +223,6 @@ export class MeatCookSystem extends Component {
         } else {
             cookedMeat.setWorldPosition(this.node.worldPosition);
         }
-        
-        console.log("🍖 熟肉已创建，开始飞向熟肉桌子");
         
         // 飞向熟肉桌子
         this.flyCookedMeatToTable(cookedMeat);
@@ -263,8 +238,6 @@ export class MeatCookSystem extends Component {
         
         const startPos = cookedMeat.worldPosition.clone();
         
-        console.log(`🎯 熟肉抛物线飞行: 从 ${startPos} 到 ${targetWorldPos}`);
-        
         // 抛物线飞到熟肉桌子
         tween(cookedMeat)
             .to(1.0, {
@@ -277,29 +250,25 @@ export class MeatCookSystem extends Component {
                 }
             })
             .call(() => {
-                console.log("✅ 熟肉到达熟肉桌子");
-                
                 // 设置父节点为熟肉桌子（视觉堆叠）
                 cookedMeat.parent = this.cookedTableNode;
                 cookedMeat.setPosition(stackPosition);
-                // 🆕 重置旋转
                 cookedMeat.setRotationFromEuler(0, 0, 0);
                 
                 // 添加到本地数组用于视觉管理
                 this._cookedMeats.push(cookedMeat);
                 this._cookedMeatCount++;
                 
-                // 🆕 添加到 CookedMeatDeliverySystem 以便 ObtainCookedZone 可以获取
+                // 添加到 CookedMeatDeliverySystem 以便 ObtainCookedZone 可以获取
                 if (this.cookedMeatDeliverySystem) {
                     const deliverySystem = this.cookedMeatDeliverySystem.getComponent(CookedMeatDeliverySystem);
                     if (deliverySystem) {
                         deliverySystem.addCookedMeat(cookedMeat);
-                        console.log(`🍖 熟肉已添加到 CookedMeatDeliverySystem，总数: ${this._cookedMeatCount}`);
                     } else {
-                        console.warn("⚠️ MeatCookSystem: 未找到 CookedMeatDeliverySystem 组件");
+                        console.warn("MeatCookSystem: CookedMeatDeliverySystem component not found");
                     }
                 } else {
-                    console.warn("⚠️ MeatCookSystem: 未配置 cookedMeatDeliverySystem");
+                    console.warn("MeatCookSystem: cookedMeatDeliverySystem not configured");
                 }
             })
             .start();
@@ -360,7 +329,6 @@ export class MeatCookSystem extends Component {
     // 获取熟肉（保留用于向后兼容，但建议使用 CookedMeatDeliverySystem）
     takeCookedMeat(): Node | null {
         if (this._cookedMeatCount === 0) {
-            console.log("⚠️ 没有熟肉可获取");
             return null;
         }
         
@@ -373,8 +341,6 @@ export class MeatCookSystem extends Component {
             
             // 更新剩余熟肉的位置
             this.updateCookedMeatPositions();
-            
-            console.log(`📤 拿走熟肉，剩余: ${this._cookedMeatCount}`);
         }
         
         return cookedMeat;
@@ -405,7 +371,6 @@ export class MeatCookSystem extends Component {
             }
         });
         this._slicedMeatsOnCook = [];
-        console.log("🧹 清空所有烹饪中的肉块");
     }
     
     // 清空所有熟肉（调试用）
@@ -417,7 +382,6 @@ export class MeatCookSystem extends Component {
         });
         this._cookedMeats = [];
         this._cookedMeatCount = 0;
-        console.log("🧹 清空所有熟肉");
     }
     
     // 重置烹饪系统（调试用）
@@ -427,6 +391,5 @@ export class MeatCookSystem extends Component {
         this._isPlayerInZone = false;
         this._transferTimer = 0;
         this._currentTransferIndex = 0;
-        console.log("🔄 烹饪系统已重置");
     }
 }

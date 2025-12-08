@@ -23,8 +23,6 @@ export class ObtainZone extends Component {
     private _obtainTimer: number = 0;
     
     onLoad() {
-        console.log("✅ ObtainZone脚本已加载");
-        
         const collider = this.getComponent(Collider);
         if (collider) {
             collider.isTrigger = true;
@@ -41,7 +39,6 @@ export class ObtainZone extends Component {
     
     onTriggerEnter(event: ITriggerEvent) {
         if (event.otherCollider.node.name === 'Player') {
-            console.log("🌟 玩家进入获取区域!");
             this._playerInZone = true;
             this._playerNode = event.otherCollider.node;
             this._obtainTimer = 0;
@@ -50,7 +47,6 @@ export class ObtainZone extends Component {
     
     onTriggerExit(event: ITriggerEvent) {
         if (event.otherCollider.node.name === 'Player') {
-            console.log("玩家离开获取区域");
             this._playerInZone = false;
             this._playerNode = null;
             this._obtainTimer = 0;
@@ -77,7 +73,7 @@ export class ObtainZone extends Component {
         if (this.cookedMeatDeliverySystem) {
             const cookedSystem = this.cookedMeatDeliverySystem.getComponent(CookedMeatDeliverySystem);
             if (!cookedSystem) {
-                console.warn("❌ ObtainZone: 未找到 CookedMeatDeliverySystem 组件");
+                console.warn("ObtainZone: CookedMeatDeliverySystem component not found");
                 return;
             }
             
@@ -87,9 +83,7 @@ export class ObtainZone extends Component {
 
             const cookedFromSystem = cookedSystem.takeCookedMeat();
             if (cookedFromSystem) {
-                // 直接使用系统中已有的熟肉节点，从当前位置飞到玩家背上
                 this.flyCookedMeatToPlayerBack(cookedFromSystem, playerController);
-                console.log("🍖 玩家获得熟肉!");
             }
             
             return;
@@ -99,7 +93,7 @@ export class ObtainZone extends Component {
         if (this.meatDeliverySystem && this.slicedMeatPrefab) {
             const deliverySystem = this.meatDeliverySystem.getComponent(MeatDeliverySystem);
             if (!deliverySystem) {
-                console.warn("❌ ObtainZone: 未找到 MeatDeliverySystem 组件");
+                console.warn("ObtainZone: MeatDeliverySystem component not found");
                 return;
             }
             
@@ -111,7 +105,6 @@ export class ObtainZone extends Component {
             if (slicedFromTable) {
                 const slicedMeat = instantiate(this.slicedMeatPrefab);
                 this.flyToPlayerBack(slicedMeat, playerController);
-                console.log("🔪 玩家获得切片肉!");
             }
         }
     }
@@ -127,8 +120,6 @@ export class ObtainZone extends Component {
         const startPos = slicedMeat.worldPosition.clone();
         const targetPos = this._playerNode.worldPosition.clone();
         
-        console.log("✈️ 煮好的肉块飞向玩家");
-        
         tween(slicedMeat)
             .to(0.6, {
                 position: targetPos
@@ -139,9 +130,6 @@ export class ObtainZone extends Component {
                 }
             })
             .call(() => {
-                console.log("✅ 切片肉到达玩家");
-                
-                // 🆕 交给玩家控制器处理堆叠（切片肉）
                 playerController.obtainSlicedMeat(slicedMeat);
             })
             .start();
@@ -151,13 +139,15 @@ export class ObtainZone extends Component {
     flyCookedMeatToPlayerBack(cookedMeat: Node, playerController: PlayerController) {
         if (!this._playerNode || !cookedMeat) return;
         
-        // 确保在场景中
-        cookedMeat.parent = this.node.scene;
-        
+        // 获取世界位置（在改变parent之前）
         const startPos = cookedMeat.worldPosition.clone();
         const targetPos = this._playerNode.worldPosition.clone();
         
-        console.log("✈️ 熟肉飞向玩家");
+        // 确保在场景中（从原位置分离）
+        cookedMeat.parent = this.node.scene;
+        
+        // 立即设置世界位置，确保从原位置开始飞行
+        cookedMeat.setWorldPosition(startPos);
         
         tween(cookedMeat)
             .to(0.6, {
@@ -169,9 +159,6 @@ export class ObtainZone extends Component {
                 }
             })
             .call(() => {
-                console.log("✅ 熟肉到达玩家");
-                
-                // 交给玩家控制器处理堆叠（熟肉）
                 playerController.obtainCookedMeat(cookedMeat);
             })
             .start();

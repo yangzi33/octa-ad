@@ -23,22 +23,16 @@ export class CookedMeatDeliverySystem extends Component {
         
         this._cookedMeats.push(meat);
         this._cookedMeatCount = this._cookedMeats.length;
-        console.log(`🍖 CookedMeatDeliverySystem: 加入熟肉，当前数量: ${this._cookedMeatCount}`);
     }
     
     // 玩家从系统中拿走一块熟肉
     takeCookedMeat(): Node | null {
         if (this._cookedMeatCount === 0) {
-            console.log("⚠️ CookedMeatDeliverySystem: 没有熟肉可以拿取");
             return null;
         }
         
         const cookedMeat = this._cookedMeats.pop();
         this._cookedMeatCount = this._cookedMeats.length;
-        
-        if (cookedMeat) {
-            console.log(`📤 取出一块熟肉，剩余: ${this._cookedMeatCount}`);
-        }
         
         return cookedMeat;
     }
@@ -62,7 +56,6 @@ export class CookedMeatDeliverySystem extends Component {
         });
         this._cookedMeats = [];
         this._cookedMeatCount = 0;
-        console.log("🧹 CookedMeatDeliverySystem: 已清空所有熟肉");
     }
 }
 

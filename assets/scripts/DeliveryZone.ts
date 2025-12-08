@@ -19,8 +19,6 @@ export class DeliveryZone extends Component {
     private _deliveryTimer: number = 0;
     
     onLoad() {
-        console.log("✅ DeliveryZone脚本已加载");
-        
         const collider = this.getComponent(Collider);
         if (collider) {
             collider.isTrigger = true;
@@ -31,16 +29,12 @@ export class DeliveryZone extends Component {
     
     update(deltaTime: number) {
         if (this._playerInZone && this.autoDelivery) {
-            console.log("222");
             this.continuousDelivery(deltaTime);
         }
     }
     
     onTriggerEnter(event: ITriggerEvent) {
-        console.log("🎯 触发进入:", event.otherCollider.node.name);
-        
         if (event.otherCollider.node.name === 'Player') {
-            console.log("🌟 玩家进入交付区域!");
             this._playerInZone = true;
             this._playerNode = event.otherCollider.node;
             this._deliveryTimer = 0;
@@ -48,10 +42,7 @@ export class DeliveryZone extends Component {
     }
     
     onTriggerExit(event: ITriggerEvent) {
-        console.log("🚪 触发离开:", event.otherCollider.node.name);
-        
         if (event.otherCollider.node.name === 'Player') {
-            console.log("玩家离开交付区域");
             this._playerInZone = false;
             this._playerNode = null;
             this._deliveryTimer = 0;
@@ -77,7 +68,6 @@ export class DeliveryZone extends Component {
         const interval = 1.0 / this.deliveryRate;
         
         if (this._deliveryTimer >= interval) {
-            console.log("111");
             this.tryDeliverMeat();
             this._deliveryTimer = 0;
         }
@@ -85,39 +75,28 @@ export class DeliveryZone extends Component {
     
     tryDeliverMeat() {
         if (!this._playerNode || !this.meatDeliverySystem) {
-            console.error("❌ 无法交付：缺少玩家或交付系统");
+            console.error("DeliveryZone: Cannot deliver - missing player or delivery system");
             return;
         }
         
-        // 🆕 使用类型断言
         const playerController = this._playerNode.getComponent(PlayerController);
         const deliverySystem = this.meatDeliverySystem.getComponent(MeatDeliverySystem);
         
         if (!playerController || !deliverySystem) {
-            console.error("❌ 无法交付：缺少组件");
+            console.error("DeliveryZone: Cannot deliver - missing components");
             return;
         }
         
-        // 🆕 现在有类型提示，可以调用方法
         if (!playerController.hasMeat()) {
-            console.log("⚠️ 玩家没有肉块可交付");
             return;
         }
         
-        console.log("📦 尝试交付肉块...");
-        
-        // 🆕 调用方法（现在有类型提示）
         const meatNode = playerController.deliverOneMeat();
         if (!meatNode) {
-            console.error("❌ 无法获取肉块节点");
+            console.error("DeliveryZone: Failed to get meat node");
             return;
         }
         
-        console.log("✅ 获取到肉块节点:", meatNode.name);
-        
-        // 🆕 调用交付系统方法
-        deliverySystem.deliverMeat(meatNode, () => {
-            console.log("🎉 肉块交付流程完成!");
-        });
+        deliverySystem.deliverMeat(meatNode);
     }
 }

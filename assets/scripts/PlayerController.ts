@@ -179,8 +179,6 @@ export class PlayerController extends Component {
 
     // 收集生肉
     collectMeatDirectly(meat: Node) {
-        console.log("PlayerController 开始收集肉块:", meat.name);
-        
         // 移除物理组件
         const rigidbody = meat.getComponent(RigidBody);
         if (rigidbody) {
@@ -203,8 +201,6 @@ export class PlayerController extends Component {
         this._meats.push(meat);
         
         this.updateAllMeatPositions();
-        
-        console.log(`成功收集到生肉! 当前数量: ${this._meats.length}`);
     }
     
     // 获取切片肉
@@ -226,8 +222,6 @@ export class PlayerController extends Component {
         this._slicedMeats.push(slicedMeat);
         
         this.updateAllMeatPositions();
-        
-        console.log(`🔪 获得切片肉，总数: ${this._slicedMeats.length}`);
     }
     
     // 获取熟肉
@@ -249,8 +243,6 @@ export class PlayerController extends Component {
         this._cookedMeats.push(cookedMeat);
         
         this.updateAllMeatPositions();
-        
-        console.log(`🍖 获得熟肉，总数: ${this._cookedMeats.length}`);
     }
     
     // 交付生肉
@@ -265,7 +257,6 @@ export class PlayerController extends Component {
         lastMeat.parent = null;
         this.updateAllMeatPositions();
         
-        console.log(`📦 交付1块生肉，剩余 ${this._meats.length} 块`);
         return lastMeat;
     }
     
@@ -281,7 +272,6 @@ export class PlayerController extends Component {
         lastSlicedMeat.parent = null;
         this.updateAllMeatPositions();
         
-        console.log(`📦 交付1块切片肉，剩余 ${this._slicedMeats.length} 块`);
         return lastSlicedMeat;
     }
     
@@ -297,14 +287,12 @@ export class PlayerController extends Component {
         lastCookedMeat.parent = null;
         this.updateAllMeatPositions();
         
-        console.log(`📦 交付1块熟肉，剩余 ${this._cookedMeats.length} 块`);
         return lastCookedMeat;
     }
     
     // 获取切片肉（用于交给烹饪系统）
     takeSlicedMeat(): Node | null {
         if (this._slicedMeats.length === 0) {
-            console.log("⚠️ 没有切片肉可获取");
             return null;
         }
         
@@ -313,8 +301,6 @@ export class PlayerController extends Component {
         if (slicedMeat) {
             slicedMeat.parent = null;
             this.updateAllMeatPositions();
-            
-            console.log(`📤 拿走切片肉，剩余: ${this._slicedMeats.length}`);
         }
         
         return slicedMeat;
@@ -396,7 +382,6 @@ export class PlayerController extends Component {
             if (this._slicedMeats.length > 0) {
                 const slicedMeat = this.takeSlicedMeat();
                 if (slicedMeat) {
-                    console.log("🍳 将切片肉交给烹饪系统");
                     this._cookZoneController.addSlicedMeat(slicedMeat);
                 }
             }
@@ -405,7 +390,6 @@ export class PlayerController extends Component {
             if (this._cookZoneController.hasCookedMeat()) {
                 const cookedMeat = this._cookZoneController.takeCookedMeat();
                 if (cookedMeat) {
-                    console.log("🍖 从烹饪系统获取熟肉");
                     this.obtainCookedMeat(cookedMeat);
                 }
             }
@@ -417,7 +401,6 @@ export class PlayerController extends Component {
         if (this._isInDeliveryZone && this.getTotalMeatCount() > 0) {
             if (!this._deliveryTimer) {
                 this._deliveryTimer = 0;
-                console.log("🏪 开始自动交付肉块");
             }
             
             this._deliveryTimer += deltaTime;
@@ -438,7 +421,6 @@ export class PlayerController extends Component {
                 
                 if (this.getTotalMeatCount() === 0) {
                     this._deliveryTimer = null;
-                    console.log("✅ 所有肉块交付完成");
                 }
             }
         } else {
@@ -450,7 +432,7 @@ export class PlayerController extends Component {
         this._collider = this.node.getComponent(Collider);
         
         if (!this._collider) {
-            console.error("❌ 玩家节点上没有碰撞器组件！请在编辑器中添加碰撞器");
+            console.error("PlayerController: Collider component not found on player node");
             return;
         }
         
@@ -458,7 +440,7 @@ export class PlayerController extends Component {
         this._rigidBody = this.node.getComponent(RigidBody);
         
         if (!this._rigidBody) {
-            console.error("❌ 玩家节点上没有刚体组件！请在编辑器中添加刚体");
+            console.error("PlayerController: RigidBody component not found on player node");
             return;
         }
         
@@ -521,83 +503,63 @@ export class PlayerController extends Component {
     
     // 碰撞事件方法
     onCollisionEnter(event: ICollisionEvent) {
-        const otherNode = event.otherCollider.node;
-        console.log("💥 玩家碰撞到:", otherNode.name);
-        
-        if (otherNode.name.includes('Wall') || otherNode.name.includes('Obstacle')) {
-            console.log("🚧 撞到障碍物");
-        }
+        // Collision handling
     }
     
     onCollisionStay(event: ICollisionEvent) {
-        // 持续碰撞处理 - 可以在这里添加持续碰撞的逻辑
-        const otherNode = event.otherCollider.node;
-        // console.log("💥 玩家持续碰撞:", otherNode.name);
+        // 持续碰撞处理
     }
     
     onCollisionExit(event: ICollisionEvent) {
-        const otherNode = event.otherCollider.node;
-        console.log("💥 玩家结束碰撞:", otherNode.name);
+        // Collision exit handling
     }
     
     // 触发器事件
     onTriggerEnter(event: ITriggerEvent) {
         const otherNode = event.otherCollider.node;
-        console.log("🔵 玩家进入触发器:", otherNode.name);
         
         if (otherNode.name === 'DeliveryZone') {
             this._deliveryZone = otherNode;
             this._isInDeliveryZone = true;
-            console.log("进入交付区域");
         }
         else if (otherNode.name === 'SlicedPickupZone') {
             this._slicedPickupZone = otherNode;
             this._isInSlicedPickupZone = true;
-            console.log("进入切片拾取区域");
         }
         else if (otherNode.name === 'CookingZone') {
             this._cookingZone = otherNode;
             this._isInCookingZone = true;
             this._cookZoneController = otherNode.getComponent(MeatCookSystem);
-            console.log("🍳 进入烹饪区域");
         }
         else if (otherNode.name.includes('Meat')) {
-            console.log("🥩 碰到肉块，开始收集");
             this.startCollectingMeat(otherNode);
         }
     }
     
     onTriggerStay(event: ITriggerEvent) {
-        const otherNode = event.otherCollider.node;
-        // 持续触发逻辑 - 可以在这里添加持续触发器的逻辑
-        // console.log("🔵 玩家停留在触发器:", otherNode.name);
+        // 持续触发逻辑
     }
     
     onTriggerExit(event: ITriggerEvent) {
         const otherNode = event.otherCollider.node;
-        console.log("🔵 玩家离开触发器:", otherNode.name);
         
         if (otherNode.name === 'DeliveryZone') {
             this._isInDeliveryZone = false;
             this._deliveryZone = null;
             this._deliveryTimer = null;
-            console.log("离开交付区域");
         }
         else if (otherNode.name === 'SlicedPickupZone') {
             this._isInSlicedPickupZone = false;
             this._slicedPickupZone = null;
-            console.log("离开切片拾取区域");
         }
         else if (otherNode.name === 'CookingZone') {
             this._isInCookingZone = false;
             this._cookingZone = null;
             this._cookZoneController = null;
-            console.log("🍳 离开烹饪区域");
         }
     }
     
     startCollectingMeat(meat: Node) {
-        console.log("开始收集肉块:", meat.name);
         this.collectMeatDirectly(meat);
     }
     
@@ -684,8 +646,6 @@ export class PlayerController extends Component {
             this._targetEulerY = targetAngle;
             const currentEuler = this.node.eulerAngles;
             this.node.setRotationFromEuler(currentEuler.x, targetAngle, currentEuler.z);
-            
-            console.log(`🎯 手动设置方向: ${direction} - ${this.getDirectionName(direction)}`);
         }
     }
 
@@ -693,8 +653,6 @@ export class PlayerController extends Component {
     deliverAllMeat() {
         const totalCount = this.getTotalMeatCount();
         if (totalCount === 0) return;
-        
-        console.log(`交付了 ${totalCount} 块肉`);
         
         // 销毁所有肉块
         [...this._meats, ...this._slicedMeats, ...this._cookedMeats].forEach(meat => {
@@ -711,7 +669,6 @@ export class PlayerController extends Component {
     }
     
     onMeatDelivered() {
-        // 交付效果 - 可以在这里添加交付后的特效或音效
-        console.log("✅ 所有肉块已交付");
+        // 交付效果
     }
 }
