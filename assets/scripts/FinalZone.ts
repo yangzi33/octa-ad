@@ -15,10 +15,14 @@ export class FinalZone extends Component {
     
     @property
     flightHeight: number = 2.0;
+    
+    @property
+    stackHeight: number = 0.5; // 每个熟肉块在目标节点上的堆叠高度
 
     private _playerInZone: boolean = false;
     private _playerNode: Node = null;
     private _obtainTimer: number = 0;
+    private _stackedMeats: Node[] = []; // 堆叠在目标节点上的熟肉列表
     
     onLoad() {
         const collider = this.getComponent(Collider);
@@ -27,6 +31,9 @@ export class FinalZone extends Component {
             collider.on('onTriggerEnter', this.onTriggerEnter, this);
             collider.on('onTriggerExit', this.onTriggerExit, this);
         }
+        
+        // 初始化堆叠列表
+        this._stackedMeats = [];
     }
     
     update(deltaTime: number) {
@@ -117,23 +124,34 @@ export class FinalZone extends Component {
             return;
         }
         
-        // 确保肉块在场景中
+        // 过滤掉无效或已销毁的肉块，确保计数准确
+        this._stackedMeats = this._stackedMeats.filter(meat => {
+            return meat && meat.isValid && meat.parent === this.targetNode;
+        });
+        
+        // 计算堆叠位置（基于当前堆叠数量）
+        const stackIndex = this._stackedMeats.length;
+        const stackPosition = this.calculateStackPosition(stackIndex);
+        
+        // 将本地堆叠位置转换为世界坐标
+        const targetWorldPos = this.convertLocalToWorld(this.targetNode, stackPosition);
+        
+        // 确保肉块在场景中（从玩家身上分离）
         if (cookedMeat.parent) {
             cookedMeat.parent = null;
         }
         cookedMeat.parent = this.node.scene;
         
         const startPos = cookedMeat.worldPosition.clone();
-        const targetPos = this.targetNode.worldPosition.clone();
         
         // 飞到目标节点
         tween(cookedMeat)
             .to(0.8, { 
-                position: targetPos
+                position: targetWorldPos
             }, {
                 onUpdate: (target: Node, ratio: number) => {
                     try {
-                        const currentPos = this.calculateFlightPath(startPos, targetPos, ratio);
+                        const currentPos = this.calculateFlightPath(startPos, targetWorldPos, ratio);
                         target.setWorldPosition(currentPos);
                         target.setRotationFromEuler(0, ratio * 360, 0);
                     } catch (error) {
@@ -142,25 +160,36 @@ export class FinalZone extends Component {
                 }
             })
             .call(() => {
-                // 等待指定时间
-                this.scheduleOnce(() => {
-                    this.destroyAndAction(cookedMeat);
-                }, this.waitTime);
+                // 保存原始世界缩放（在改变parent之前，确保保持预制体的原始大小）
+                const originalWorldScale = cookedMeat.worldScale.clone();
+                
+                // 设置父节点为目标节点并设置本地位置（堆叠）
+                cookedMeat.parent = this.targetNode;
+                cookedMeat.setPosition(stackPosition);
+                cookedMeat.setRotationFromEuler(0, 0, 0);
+                
+                // 恢复原始世界缩放（确保保持预制体的原始大小，不受父节点缩放影响）
+                cookedMeat.setWorldScale(originalWorldScale);
+                
+                // 添加到堆叠列表
+                this._stackedMeats.push(cookedMeat);
+                
+                // 执行动作（不销毁肉块）
+                this.executeFinalAction();
             })
             .start();
     }
     
-    destroyAndAction(cookedMeat: Node) {
-        if (!cookedMeat || !cookedMeat.isValid) {
-            console.error("FinalZone: Destroy failed - meat invalid");
-            return;
-        }
-        
-        // 销毁肉块
-        cookedMeat.destroy();
-        
-        // 执行动作
-        this.executeFinalAction();
+    // 计算堆叠位置
+    calculateStackPosition(index: number): Vec3 {
+        return new Vec3(0, index * this.stackHeight, 0);
+    }
+    
+    // 将本地坐标转换为世界坐标
+    convertLocalToWorld(node: Node, localPos: Vec3): Vec3 {
+        const worldPos = new Vec3();
+        Vec3.transformMat4(worldPos, localPos, node.worldMatrix);
+        return worldPos;
     }
     
     executeFinalAction() {
@@ -205,6 +234,25 @@ export class FinalZone extends Component {
         this.node.scene.addChild(testMeat);
         
         this.flyToTargetAndWait(testMeat);
+    }
+    
+    // 获取当前堆叠的熟肉数量
+    getStackedMeatCount(): number {
+        // 过滤掉无效或已销毁的肉块
+        this._stackedMeats = this._stackedMeats.filter(meat => {
+            return meat && meat.isValid && meat.parent === this.targetNode;
+        });
+        return this._stackedMeats.length;
+    }
+    
+    // 清空所有堆叠的熟肉（调试用）
+    clearStackedMeats() {
+        this._stackedMeats.forEach(meat => {
+            if (meat && meat.isValid) {
+                meat.destroy();
+            }
+        });
+        this._stackedMeats = [];
     }
     
     // 强制获取煮好肉块
