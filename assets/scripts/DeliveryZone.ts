@@ -93,7 +93,7 @@ export class DeliveryZone extends Component {
         
         const meatNode = playerController.deliverOneMeat();
         if (!meatNode) {
-            console.error("DeliveryZone: Failed to get meat node");
+            // console.error("DeliveryZone: Failed to get meat node");
             return;
         }
         

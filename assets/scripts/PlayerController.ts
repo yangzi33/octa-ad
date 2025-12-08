@@ -207,7 +207,7 @@ export class PlayerController extends Component {
     obtainSlicedMeat(slicedMeat: Node) {
         if (!slicedMeat) return;
         
-        // 准备切片肉
+        // 移除物理组件
         const rigidbody = slicedMeat.getComponent(RigidBody);
         if (rigidbody) {
             slicedMeat.removeComponent(RigidBody);
@@ -218,9 +218,17 @@ export class PlayerController extends Component {
             slicedMeat.removeComponent(Collider);
         }
         
+        // 禁用肉块脚本（如果存在）
+        const meatComp = slicedMeat.getComponent(Meat);
+        if (meatComp) {
+            meatComp.enabled = false;
+        }
+        
+        // 设置为玩家子节点
         slicedMeat.parent = this.node;
         this._slicedMeats.push(slicedMeat);
         
+        // 立即更新位置，确保切片肉正确附着
         this.updateAllMeatPositions();
     }
     
@@ -228,7 +236,7 @@ export class PlayerController extends Component {
     obtainCookedMeat(cookedMeat: Node) {
         if (!cookedMeat) return;
         
-        // 准备熟肉
+        // 移除物理组件
         const rigidbody = cookedMeat.getComponent(RigidBody);
         if (rigidbody) {
             cookedMeat.removeComponent(RigidBody);
@@ -239,9 +247,17 @@ export class PlayerController extends Component {
             cookedMeat.removeComponent(Collider);
         }
         
+        // 禁用肉块脚本（如果存在）
+        const meatComp = cookedMeat.getComponent(Meat);
+        if (meatComp) {
+            meatComp.enabled = false;
+        }
+        
+        // 设置为玩家子节点
         cookedMeat.parent = this.node;
         this._cookedMeats.push(cookedMeat);
         
+        // 立即更新位置，确保熟肉正确附着
         this.updateAllMeatPositions();
     }
     

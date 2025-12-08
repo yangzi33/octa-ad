@@ -14,6 +14,9 @@ export class MeatCookSystem extends Component {
     @property(Node)
     cookedMeatDeliverySystem: Node = null; // 🆕 熟肉交付系统，用于管理熟肉
     
+    @property(Node)
+    slicedMeatStartNode: Node = null; // 切片肉飞行起始位置节点
+    
     @property
     transferRate: number = 1.0; // 每秒转移的切片肉数量 (n)
     
@@ -143,13 +146,19 @@ export class MeatCookSystem extends Component {
         // 将本地堆叠位置转换为世界坐标
         const targetWorldPos = this.convertLocalToWorld(this.cookNode, stackPosition);
         
-        // 确保获取切片肉在玩家身上的世界坐标（在改变parent之前）
-        const startPos = slicedMeat.worldPosition.clone();
+        // 获取起始位置：从属性节点获取，如果没有则使用切片肉的世界坐标
+        let startPos: Vec3;
+        if (this.slicedMeatStartNode) {
+            startPos = this.slicedMeatStartNode.worldPosition.clone();
+        } else {
+            // 备用方案：使用切片肉在玩家身上的世界坐标（在改变parent之前）
+            startPos = slicedMeat.worldPosition.clone();
+        }
         
         // 确保切片肉在场景中（从玩家身上分离）
         slicedMeat.parent = this.node.scene;
         
-        // 立即设置世界位置，确保从玩家位置开始飞行
+        // 立即设置世界位置，确保从起始位置开始飞行
         slicedMeat.setWorldPosition(startPos);
         
         // 抛物线飞到烹饪节点
@@ -232,8 +241,11 @@ export class MeatCookSystem extends Component {
     flyCookedMeatToTable(cookedMeat: Node) {
         if (!this.cookedTableNode) return;
         
-        // 计算在熟肉桌子上的堆叠位置
-        const stackPosition = this.calculateCookedMeatStackPosition(this._cookedMeatCount);
+        // 获取当前桌子上实际存在的熟肉数量（从 CookedMeatDeliverySystem 获取准确计数）
+        const currentStackCount = this.getCurrentCookedMeatCountOnTable();
+        
+        // 计算在熟肉桌子上的堆叠位置（使用当前实际数量，而不是总创建数）
+        const stackPosition = this.calculateCookedMeatStackPosition(currentStackCount);
         const targetWorldPos = this.convertLocalToWorld(this.cookedTableNode, stackPosition);
         
         const startPos = cookedMeat.worldPosition.clone();
@@ -344,6 +356,23 @@ export class MeatCookSystem extends Component {
         }
         
         return cookedMeat;
+    }
+    
+    // 获取当前桌子上实际存在的熟肉数量
+    getCurrentCookedMeatCountOnTable(): number {
+        // 优先从 CookedMeatDeliverySystem 获取准确计数
+        if (this.cookedMeatDeliverySystem) {
+            const deliverySystem = this.cookedMeatDeliverySystem.getComponent(CookedMeatDeliverySystem);
+            if (deliverySystem) {
+                return deliverySystem.getCookedMeatCount();
+            }
+        }
+        
+        // 备用方案：过滤本地数组，只计算仍在桌子上的熟肉
+        const meatsOnTable = this._cookedMeats.filter(meat => {
+            return meat && meat.isValid && meat.parent === this.cookedTableNode;
+        });
+        return meatsOnTable.length;
     }
     
     // 更新熟肉位置（过滤掉已被取走的熟肉）
