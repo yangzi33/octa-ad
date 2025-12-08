@@ -53,13 +53,13 @@ export class ObtainCookedZone extends Component {
     continuousObtain(deltaTime: number) {
         if (!this._playerNode || !this.cookedMeatDeliverySystem) return;
         
-        const playerController = this._playerNode.getComponent('PlayerController') as PlayerController;
+        const playerController = this._playerNode.getComponent(PlayerController);
         if (!playerController) {
             console.warn("❌ ObtainCookedZone: 未找到 PlayerController 组件");
             return;
         }
         
-        const cookedSystem = this.cookedMeatDeliverySystem.getComponent('CookedMeatDeliverySystem') as CookedMeatDeliverySystem;
+        const cookedSystem = this.cookedMeatDeliverySystem.getComponent(CookedMeatDeliverySystem);
         if (!cookedSystem) {
             console.warn("❌ ObtainCookedZone: 未找到 CookedMeatDeliverySystem 组件");
             return;

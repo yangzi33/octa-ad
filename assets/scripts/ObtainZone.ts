@@ -1,4 +1,7 @@
 import { _decorator, Component, Node, Collider, ITriggerEvent, Prefab, instantiate, Vec3, tween } from 'cc';
+import { PlayerController } from './PlayerController';
+import { CookedMeatDeliverySystem } from './CookedMeatDeliverySystem';
+import { MeatDeliverySystem } from './MeatDeliverySystem';
 const { ccclass, property } = _decorator;
 
 @ccclass('ObtainZone')
@@ -57,7 +60,7 @@ export class ObtainZone extends Component {
     continuousObtain(deltaTime: number) {
         if (!this._playerNode) return;
         
-        const playerController = this._playerNode.getComponent('PlayerController') as any;
+        const playerController = this._playerNode.getComponent(PlayerController);
         if (!playerController) return;
         
         this._obtainTimer += deltaTime;
@@ -72,7 +75,7 @@ export class ObtainZone extends Component {
         
         // 优先处理熟肉获取（新逻辑）
         if (this.cookedMeatDeliverySystem) {
-            const cookedSystem = this.cookedMeatDeliverySystem.getComponent('CookedMeatDeliverySystem') as any;
+            const cookedSystem = this.cookedMeatDeliverySystem.getComponent(CookedMeatDeliverySystem);
             if (!cookedSystem) {
                 console.warn("❌ ObtainZone: 未找到 CookedMeatDeliverySystem 组件");
                 return;
@@ -94,7 +97,7 @@ export class ObtainZone extends Component {
         
         // 兼容：旧的切片肉获取逻辑（如果没有配置熟肉系统）
         if (this.meatDeliverySystem && this.slicedMeatPrefab) {
-            const deliverySystem = this.meatDeliverySystem.getComponent('MeatDeliverySystem') as any;
+            const deliverySystem = this.meatDeliverySystem.getComponent(MeatDeliverySystem);
             if (!deliverySystem) {
                 console.warn("❌ ObtainZone: 未找到 MeatDeliverySystem 组件");
                 return;
@@ -114,7 +117,7 @@ export class ObtainZone extends Component {
     }
     
     // 🆕 切片肉飞到玩家背上（保持原有逻辑）
-    flyToPlayerBack(slicedMeat: Node, playerController: any) {
+    flyToPlayerBack(slicedMeat: Node, playerController: PlayerController) {
         if (!this._playerNode || !slicedMeat) return;
         
         // 设置初始位置在获取区域
@@ -145,7 +148,7 @@ export class ObtainZone extends Component {
     }
     
     // 🆕 熟肉从当前位置飞到玩家背上，并作为熟肉加入玩家
-    flyCookedMeatToPlayerBack(cookedMeat: Node, playerController: any) {
+    flyCookedMeatToPlayerBack(cookedMeat: Node, playerController: PlayerController) {
         if (!this._playerNode || !cookedMeat) return;
         
         // 确保在场景中

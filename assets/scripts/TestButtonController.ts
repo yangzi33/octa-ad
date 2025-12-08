@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Color } from 'cc';
+import { _decorator, Component, Node, Button, Color, Sprite, Label, RichText } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('TestButtonController')
@@ -91,12 +91,12 @@ export class TestButtonController extends Component {
     setBackgroundColor(color: Color) {
         // 这里需要根据你实际的背景组件来设置
         // 例如：Sprite, Label, RichText等
-        const sprite = this.targetCanvas.getComponent('cc.Sprite') as any;
+        const sprite = this.targetCanvas.getComponent(Sprite);
         if (sprite) {
             sprite.color = color;
         }
         
-        const label = this.targetCanvas.getComponent('cc.Label') as any;
+        const label = this.targetCanvas.getComponent(Label);
         if (label) {
             label.color = color;
         }
@@ -108,19 +108,19 @@ export class TestButtonController extends Component {
     setChildrenColor(color: Color) {
         this.targetCanvas.children.forEach(child => {
             // 设置Sprite颜色
-            const sprite = child.getComponent('cc.Sprite') as any;
+            const sprite = child.getComponent(Sprite);
             if (sprite) {
                 sprite.color = color;
             }
             
             // 设置Label颜色
-            const label = child.getComponent('cc.Label') as any;
+            const label = child.getComponent(Label);
             if (label) {
                 label.color = color;
             }
             
             // 设置RichText颜色
-            const richText = child.getComponent('cc.RichText') as any;
+            const richText = child.getComponent(RichText);
             if (richText) {
                 richText.color = color;
             }

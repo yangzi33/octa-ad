@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Vec3, Collider, ICollisionEvent, Vec2, RigidBody, ITriggerEvent, Prefab, instantiate, Quat} from 'cc';
 import { Joystick } from './Joystick';
 import { Meat } from './Meat';
+import { MeatCookSystem } from './MeatCookSystem';
 const { ccclass, property } = _decorator;
 
 enum meatType {
@@ -52,7 +53,7 @@ export class PlayerController extends Component {
 
     private _cookingZone: Node = null;
     private _isInCookingZone: boolean = false;
-    private _cookZoneController: any = null;
+    private _cookZoneController: MeatCookSystem | null = null;
 
     onLoad() {
         this._targetRotation = this.node.rotation.clone();
@@ -61,7 +62,7 @@ export class PlayerController extends Component {
     
     start() {
         if (this.joystick) {
-            this._joystickComp = this.joystick.getComponent('Joystick') as any;
+            this._joystickComp = this.joystick.getComponent(Joystick);
         }
         
         this._targetEulerY = this.node.eulerAngles.y;
@@ -192,7 +193,7 @@ export class PlayerController extends Component {
         }
         
         // 禁用肉块脚本
-        const meatComp = meat.getComponent('Meat');
+        const meatComp = meat.getComponent(Meat);
         if (meatComp) {
             meatComp.enabled = false;
         }
@@ -557,7 +558,7 @@ export class PlayerController extends Component {
         else if (otherNode.name === 'CookingZone') {
             this._cookingZone = otherNode;
             this._isInCookingZone = true;
-            this._cookZoneController = otherNode.getComponent('CookZoneController');
+            this._cookZoneController = otherNode.getComponent(MeatCookSystem);
             console.log("🍳 进入烹饪区域");
         }
         else if (otherNode.name.includes('Meat')) {

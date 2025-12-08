@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Vec3, tween, v3, Prefab, instantiate, Collider, ITriggerEvent } from 'cc';
 import { PlayerController } from './PlayerController';
+import { CookedMeatDeliverySystem } from './CookedMeatDeliverySystem';
 const { ccclass, property } = _decorator;
 
 @ccclass('MeatCookSystem')
@@ -67,7 +68,7 @@ export class MeatCookSystem extends Component {
             this._currentTransferIndex = 0;
             
             // 获取玩家控制器
-            this._playerController = otherNode.getComponent('PlayerController') as PlayerController;
+            this._playerController = otherNode.getComponent(PlayerController);
             
             if (this._playerController) {
                 console.log(`🍳 开始以每秒 ${this.transferRate} 块的速度转移切片肉`);
@@ -121,6 +122,24 @@ export class MeatCookSystem extends Component {
         this._currentTransferIndex++;
     }
     
+    // 外部调用：直接添加切片肉到烹饪系统（用于PlayerController手动添加）
+    addSlicedMeat(slicedMeat: Node) {
+        if (!slicedMeat) {
+            console.warn("⚠️ MeatCookSystem.addSlicedMeat: slicedMeat is null");
+            return;
+        }
+        
+        console.log(`🍳 手动添加切片肉到烹饪节点`);
+        
+        // 将切片肉移动到烹饪节点
+        this.moveSlicedMeatToCook(slicedMeat, this._currentTransferIndex, () => {
+            // 开始烹饪计时
+            this.startCooking(slicedMeat);
+        });
+        
+        this._currentTransferIndex++;
+    }
+    
     // 将切片肉移动到烹饪节点 - 修复从玩家堆叠位置飞到cookNode
     moveSlicedMeatToCook(slicedMeat: Node, index: number, onComplete?: Function) {
         if (!this.cookNode) {
@@ -134,13 +153,16 @@ export class MeatCookSystem extends Component {
         // 将本地堆叠位置转换为世界坐标
         const targetWorldPos = this.convertLocalToWorld(this.cookNode, stackPosition);
         
-        // 🆕 修复：确保获取切片肉在玩家身上的世界坐标
+        // 🆕 修复：确保获取切片肉在玩家身上的世界坐标（在改变parent之前）
         const startPos = slicedMeat.worldPosition.clone();
         
         console.log(`🎯 切片肉抛物线飞行: 从玩家位置 ${startPos} 到烹饪节点 ${targetWorldPos}`);
         
         // 🆕 确保切片肉在场景中（从玩家身上分离）
         slicedMeat.parent = this.node.scene;
+        
+        // 🆕 修复：立即设置世界位置，确保从玩家位置开始飞行
+        slicedMeat.setWorldPosition(startPos);
         
         // 🆕 抛物线飞到烹饪节点
         tween(slicedMeat)
@@ -269,7 +291,7 @@ export class MeatCookSystem extends Component {
                 
                 // 🆕 添加到 CookedMeatDeliverySystem 以便 ObtainCookedZone 可以获取
                 if (this.cookedMeatDeliverySystem) {
-                    const deliverySystem = this.cookedMeatDeliverySystem.getComponent('CookedMeatDeliverySystem') as any;
+                    const deliverySystem = this.cookedMeatDeliverySystem.getComponent(CookedMeatDeliverySystem);
                     if (deliverySystem) {
                         deliverySystem.addCookedMeat(cookedMeat);
                         console.log(`🍖 熟肉已添加到 CookedMeatDeliverySystem，总数: ${this._cookedMeatCount}`);

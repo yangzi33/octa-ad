@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Collider, ITriggerEvent, Vec3, tween } from 'cc';
+import { PlayerController } from './PlayerController';
 const { ccclass, property } = _decorator;
 
 @ccclass('FinalZone')
@@ -76,7 +77,7 @@ export class FinalZone extends Component {
             return;
         }
         
-        const playerController = this._playerNode.getComponent('PlayerController') as any;
+        const playerController = this._playerNode.getComponent(PlayerController);
         if (!playerController) {
             console.error("❌ 玩家没有PlayerController组件!");
             return;
@@ -113,7 +114,7 @@ export class FinalZone extends Component {
             return;
         }
         
-        const playerController = this._playerNode.getComponent('PlayerController') as any;
+        const playerController = this._playerNode.getComponent(PlayerController);
         if (!playerController) {
             console.error("❌ 无法获取：缺少PlayerController组件");
             return;

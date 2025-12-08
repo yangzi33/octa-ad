@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Collider, ITriggerEvent } from 'cc';
 import { MeatDeliverySystem } from './MeatDeliverySystem';
+import { PlayerController } from './PlayerController';
 const { ccclass, property } = _decorator;
 
 @ccclass('DeliveryZone')
@@ -61,8 +62,8 @@ export class DeliveryZone extends Component {
         if (!this._playerNode || !this.meatDeliverySystem) return;
         
         // 🆕 使用类型断言
-        const playerController = this._playerNode.getComponent('PlayerController') as any;
-        const deliverySystem = this.meatDeliverySystem.getComponent('MeatDeliverySystem') as any;
+        const playerController = this._playerNode.getComponent(PlayerController);
+        const deliverySystem = this.meatDeliverySystem.getComponent(MeatDeliverySystem);
         
         if (!playerController || !deliverySystem) return;
         
@@ -89,8 +90,8 @@ export class DeliveryZone extends Component {
         }
         
         // 🆕 使用类型断言
-        const playerController = this._playerNode.getComponent('PlayerController') as any;
-        const deliverySystem = this.meatDeliverySystem.getComponent('MeatDeliverySystem') as MeatDeliverySystem;
+        const playerController = this._playerNode.getComponent(PlayerController);
+        const deliverySystem = this.meatDeliverySystem.getComponent(MeatDeliverySystem);
         
         if (!playerController || !deliverySystem) {
             console.error("❌ 无法交付：缺少组件");
